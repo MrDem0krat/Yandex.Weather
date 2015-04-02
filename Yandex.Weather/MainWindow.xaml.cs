@@ -13,6 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WeatherLib;
+using MySql.Data.MySqlClient;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using System.Text.RegularExpressions;
 
 
 namespace Yandex.Forecast
@@ -24,12 +29,23 @@ namespace Yandex.Forecast
     {
         private string city_id = "26894";
         private string img_path = "content/graphics/weather_icons/";
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         public MainWindow()
         {
             InitializeComponent();
+            LoggerConfig();
             GridWeatherWeek.Visibility = Visibility.Hidden;
-            Weather.LoadWeather(city_id);
-            RefreshTodayWeather();
+            logger.Info("Приложение запущено");
+            try
+            {
+                Weather.LoadWeather(city_id);
+                RefreshTodayWeather();
+                logger.Trace("Погода успешно обновлена.");
+            }
+            catch (Exception e)
+            {
+                logger.ErrorException("При обновлении прогноза произошла ошибка: ", e);
+            }
         }
 
         private void button_load_Click(object sender, RoutedEventArgs e)
@@ -40,7 +56,21 @@ namespace Yandex.Forecast
 
         private void button_settings_Click(object sender, RoutedEventArgs e)
         {
+            logger.Trace("Нажата тестовая кнопка настроек");
+            Weather weather = new Weather();
+            try
+            {
+                if (Weather.BaseCheck())
+                {
+                    weather = Weather.Now();
+                    weather.WriteToBase();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                logger.Error(String.Format("В методе '{0}' произошла ошибка: {1}, источник: {2}", ex.TargetSite, ex.Message, ex.Source));
+            }
         }
 
         private void button_forecast_type_Click(object sender, RoutedEventArgs e)
@@ -74,6 +104,39 @@ namespace Yandex.Forecast
             RefreshWeekWeather(0);
             button_move_left.IsEnabled = false;
             button_move_right.IsEnabled = true;
+        }
+
+        private void ShowHideTray_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void MenuExitTray_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        //Настройка логгера
+        private void LoggerConfig()
+        {
+            LoggingConfiguration config = new LoggingConfiguration();
+
+            FileTarget fileTarget = new FileTarget();
+            config.AddTarget("file", fileTarget);
+
+            fileTarget.DeleteOldFileOnStartup = true;
+            fileTarget.KeepFileOpen = false;
+            fileTarget.ConcurrentWrites = true;
+            fileTarget.Encoding = Encoding.Unicode;
+            fileTarget.ArchiveEvery = FileArchivePeriod.Day;
+            fileTarget.Layout = NLog.Layouts.Layout.FromString("${longdate} | ${uppercase:${level}} | ${message}");
+            fileTarget.FileName = NLog.Layouts.Layout.FromString("${basedir}/logs/${shortdate}.log");
+            fileTarget.ArchiveFileName = NLog.Layouts.Layout.FromString("${basedir}/logs/archives/{shortdate}.rar");
+
+            LoggingRule ruleFile = new LoggingRule("*", LogLevel.Trace, fileTarget);
+            config.LoggingRules.Add(ruleFile);
+
+            LogManager.Configuration = config;
         }
     }
 }

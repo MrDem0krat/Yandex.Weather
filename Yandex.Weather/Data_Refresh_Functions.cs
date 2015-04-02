@@ -14,10 +14,11 @@ namespace Yandex.Forecast
 {
     public partial class MainWindow : Window
     {
-        public void RefreshTodayWeather()// Обновление погоды на текущий день
+        // Обновление погоды на текущий день
+        public void RefreshTodayWeather()
         {
-            string[] _day_parts = { "morning", "day", "evening", "night" };
-            string[] _day_parts_rus = { "Утро", "День", "Вечер", "Ночь" };
+            List<string> day_parts = new List<string>();
+            day_parts.AddRange(new string[] {"morning", "day", "evening", "night" });
             List<Weather> weatherList;
             List<object> items;
 
@@ -35,41 +36,31 @@ namespace Yandex.Forecast
             items.Add(last_refresh);
             foreach (object item in items)
             {
-                RefreshDaypart(item, 0, Weather.Now());
+                RefreshDaypart(item, Weather.Now());
             }
 
             //_________Обновление прогноза на ближайшие сутки_________
-            int day_time_now = 0;
-            if (DateTime.Now.Hour >= 6)
-                if (DateTime.Now.Hour >= 12)
-                    if (DateTime.Now.Hour >= 18)
-                        day_time_now = 3;
-                    else
-                        day_time_now = 2;
-                else
-                    day_time_now = 1;
-            else
-                day_time_now = 4;
-
-            for (int i = 0; i < 4; i++)
+            int day_time_now = day_parts.IndexOf(Weather.Now().PartOfDay) + 1;
+            for (int part = 0; part < 4; part++)
             {
                 items = new List<object>();
-                items.Add(GridWeatherDay.FindName(String.Format("temperature_info_today_{0}", _day_parts[i])));
-                items.Add(GridWeatherDay.FindName(String.Format("wind_info_today_{0}", _day_parts[i])));
-                items.Add(GridWeatherDay.FindName(String.Format("pressure_info_today_{0}", _day_parts[i])));
-                items.Add(GridWeatherDay.FindName(String.Format("humidity_info_today_{0}", _day_parts[i])));
-                items.Add(GridWeatherDay.FindName(String.Format("weather_type_info_today_{0}", _day_parts[i])));
-                items.Add(GridWeatherDay.FindName(String.Format("daypart_info_today_{0}", _day_parts[i])));
-                items.Add(GridWeatherDay.FindName(String.Format("img_info_today_{0}", _day_parts[i])));
+                items.Add(GridWeatherDay.FindName(String.Format("temperature_info_today_{0}", day_parts[part])));
+                items.Add(GridWeatherDay.FindName(String.Format("wind_info_today_{0}", day_parts[part])));
+                items.Add(GridWeatherDay.FindName(String.Format("pressure_info_today_{0}", day_parts[part])));
+                items.Add(GridWeatherDay.FindName(String.Format("humidity_info_today_{0}", day_parts[part])));
+                items.Add(GridWeatherDay.FindName(String.Format("weather_type_info_today_{0}", day_parts[part])));
+                items.Add(GridWeatherDay.FindName(String.Format("daypart_info_today_{0}", day_parts[part])));
+                items.Add(GridWeatherDay.FindName(String.Format("img_info_today_{0}", day_parts[part])));
 
                 foreach (object item in items)
                 {
-                    RefreshDaypart(item, (i + day_time_now) % 4, weatherList[i + day_time_now]); // Добавить в класс метод возвращающий погоду в заданный день в заданную часть дня
+                    RefreshDaypart(item, weatherList[part + day_time_now]);
                 }
             }
         }
 
-        public void RefreshWeekWeather(int _start_day)// Обновление погоды на 4 дня
+        // Обновление погоды на 4 дня
+        public void RefreshWeekWeather(int _start_day)
         {
             List<object> items;
             string[] _day_parts = { "day", "night" };
@@ -91,18 +82,21 @@ namespace Yandex.Forecast
 
                     foreach (object item in items)
                     {
-                        RefreshDaypart(item, part * 2 + 1, weather[(_start_day + day) * 4 + (part * 2 + 1)]);
+                        RefreshDaypart(item, weather[(_start_day + day) * 4 + (part * 2 + 1)]);
                     }
-
                 }
             }
         }
 
-        public void RefreshDaypart(object _item, int _day_part_num, Weather _weather)// Обновление погоды на часть дня
+        // Обновление погоды на часть дня
+        public void RefreshDaypart(object _item, Weather _weather)
         {
             Label label;
             Image image;
-            string[] dayparts_rus = { "Утро", "День", "Вечер", "Ночь" };
+            List<string> dayparts_rus = new List<string>();
+            dayparts_rus.AddRange(new string[] {"Утро", "День", "Вечер", "Ночь"});
+            List<string> dayparts = new List<string>();
+            dayparts.AddRange(new string[] { "morning", "day", "evening", "night" });
 
             if (_item is Label)
             {
@@ -126,11 +120,10 @@ namespace Yandex.Forecast
                     label.ToolTip = _weather.Type;
                 }
                 if (label.Name.StartsWith("daypart") || label.Name.StartsWith("date"))
-                    label.Content = String.Format("{0}, {1:dd}.{1:MM}", dayparts_rus[_day_part_num % 4], _weather.Date);
+                    label.Content = String.Format("{0}, {1:dd}.{1:MM}", dayparts_rus[dayparts.IndexOf(_weather.PartOfDay)], _weather.Date);
                 if (label.Name.StartsWith("last_refresh"))
-                    label.Content = String.Format("Последнее обновление {0:dd}.{0:MM}.{0:yyyy} в {0:HH}:{0:mm}", _weather.Date);
+                    label.Content = String.Format("Последнее обновление {0:dd}.{0:MM}.{0:yyyy} в {0:HH}:{0:mm}", DateTime.Now);
             }
-
             if (_item is Image)
             {
                 image = _item as Image;
@@ -139,7 +132,8 @@ namespace Yandex.Forecast
             }
         }
 
-        string wind_direction_rus(string _src)// Локализация вывода направления ветра
+        // Локализация вывода направления ветра
+        string wind_direction_rus(string _src)
         {
             switch (_src)
             {
