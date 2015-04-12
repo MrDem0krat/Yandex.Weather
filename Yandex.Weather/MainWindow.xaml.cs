@@ -18,6 +18,8 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using System.Drawing;
 
 
 namespace Yandex.Forecast
@@ -30,10 +32,13 @@ namespace Yandex.Forecast
         private string city_id = "26894";
         private string img_path = "content/graphics/weather_icons/";
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        
+        
         public MainWindow()
         {
             InitializeComponent();
             LoggerConfig();
+            CreateTrayIcon();
             GridWeatherWeek.Visibility = Visibility.Hidden;
             logger.Info("Приложение запущено");
             try
@@ -44,76 +49,8 @@ namespace Yandex.Forecast
             }
             catch (Exception e)
             {
-                logger.ErrorException("При обновлении прогноза произошла ошибка: ", e);
+                logger.ErrorException("При обновлении прогноза произошла ошибка: ", e); //Исправить
             }
-        }
-
-        private void button_load_Click(object sender, RoutedEventArgs e)
-        {
-            Weather.LoadWeather(city_id);
-            RefreshTodayWeather();
-        }
-
-        private void button_settings_Click(object sender, RoutedEventArgs e)
-        {
-            logger.Trace("Нажата тестовая кнопка настроек");
-            Weather weather = new Weather();
-            try
-            {
-                if (Weather.BaseCheck())
-                {
-                    weather = Weather.Now();
-                    weather.WriteToBase();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                logger.Error(String.Format("В методе '{0}' произошла ошибка: {1}, источник: {2}", ex.TargetSite, ex.Message, ex.Source));
-            }
-        }
-
-        private void button_forecast_type_Click(object sender, RoutedEventArgs e)
-        {
-            if (GridWeatherDay.Visibility != Visibility.Hidden)
-            {
-                GridWeatherDay.Visibility = Visibility.Hidden;
-                GridWeatherWeek.Visibility = Visibility.Visible;
-                button_forecast_type.Content = "Прогноз на сегодня";
-                RefreshWeekWeather(0);
-                button_move_left.IsEnabled = false;
-                button_move_right.IsEnabled = true;
-            }
-            else
-            {
-                GridWeatherWeek.Visibility = Visibility.Hidden;
-                GridWeatherDay.Visibility = Visibility.Visible;
-                button_forecast_type.Content = "Прогноз на 8 дней";
-            }
-        }
-
-        private void button_last_days_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshWeekWeather(4);
-            button_move_right.IsEnabled = false;
-            button_move_left.IsEnabled = true;
-        }
-
-        private void button_first_days_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshWeekWeather(0);
-            button_move_left.IsEnabled = false;
-            button_move_right.IsEnabled = true;
-        }
-
-        private void ShowHideTray_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void MenuExitTray_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         //Настройка логгера

@@ -1,0 +1,46 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Name="SettingsWnd" x:Class="Yandex.Forecast.Settings"
+        Title="Настройки" Height="320" Width="480" Background="#FF237FAC" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" WindowStartupLocation="CenterOwner" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="11" SizeToContent="WidthAndHeight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>
+        <Label Content="Название города:" HorizontalAlignment="Left" VerticalAlignment="Top" Height="24" Width="210" Grid.Column="1" Grid.Row="1" FontSize="14" RenderTransformOrigin="0.502,0.625" VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" Padding="5,0"/>
+        <TextBox x:Name="cityNameBox" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="0,24,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="220" FontSize="14" VerticalContentAlignment="Center"/>
+        <Popup x:Name="PopupList" Margin="0,48,224,73" Grid.Column="1" Grid.Row="1" Height="140" ScrollViewer.VerticalScrollBarVisibility="Disabled" d:IsHidden="True">
+            <ListBox x:Name="PopupListBox" FontSize="14.667" HorizontalContentAlignment="Stretch" Width="220" Height="139" RenderTransformOrigin="0.605,-0.565"/>
+        </Popup>
+        <Label Content="Частота обновления:" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="0,53,0,0" Grid.Row="1" VerticalAlignment="Top" Width="140" FontSize="14" Padding="5,0" VerticalContentAlignment="Center"/>
+        <ComboBox x:Name="RefreshPeriodBox" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="140,53,0,0" Grid.Row="1" VerticalAlignment="Top" Width="80" FontSize="14" VerticalContentAlignment="Center">
+            <ComboBoxItem Content="30 мин."/>
+            <ComboBoxItem Content="1 час"/>
+            <ComboBoxItem Content="2 часа"/>
+            <ComboBoxItem Content="4 часа"/>
+        </ComboBox>
+        <GroupBox x:Name="MysqlGroup" Grid.Column="1" Header="MySQL-сервер" HorizontalAlignment="Left" Height="219" Margin="282,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="162" FontSize="14">
+            <StackPanel>
+                <Label Content="Логин" HorizontalAlignment="Left" VerticalAlignment="Top" Height="24" Width="96" Padding="5,0" FontSize="14" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="LoginBox" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="24" Grid.RowSpan="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" FontSize="14"/>
+                <Label Height="24" Width="96" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" Content="Пароль" FontSize="14" VerticalContentAlignment="Center"/>
+                <PasswordBox x:Name="PasswordBox" FontSize="14" Height="24"/>
+                <Label Content="Сервер" Height="24" Width="96" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" VerticalContentAlignment="Center" FontSize="14"/>
+                <TextBox x:Name="ServerBox" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" FontSize="14" VerticalContentAlignment="Center"/>
+                <Label Content="Порт" Height="24" Width="96" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0" VerticalContentAlignment="Center" FontSize="14"/>
+                <TextBox x:Name="PortBox" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" FontSize="14" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+        <CheckBox x:Name="MinimazeTrayBox" Content="Сворачивать в трей" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="0,83,0,0" Grid.Row="1" VerticalAlignment="Top" Width="220" RenderTransformOrigin="0.5,0.5" IsChecked="True" Padding="4,0,0,0" FontSize="14" VerticalContentAlignment="Center"/>
+        <Button x:Name="Cancel" Content="Отмена" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="370,237,0,0" Grid.Row="1" VerticalAlignment="Top" Width="74" IsCancel="True" FontSize="14"/>
+        <Button x:Name="Ok" Content="Ок" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="282,237,0,0" Grid.Row="1" VerticalAlignment="Top" Width="74" IsDefault="True" FontSize="14"/>
+
+    </Grid>
+</Window>
