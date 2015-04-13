@@ -18,9 +18,7 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Drawing;
-
 
 namespace Yandex.Forecast
 {
@@ -33,12 +31,11 @@ namespace Yandex.Forecast
         private string img_path = "content/graphics/weather_icons/";
         private static Logger logger = LogManager.GetCurrentClassLogger();
         
-        
         public MainWindow()
         {
             InitializeComponent();
-            LoggerConfig();
-            CreateTrayIcon();
+            Settings.LoggerConfig();
+            Settings.TrayIconConfig();
             GridWeatherWeek.Visibility = Visibility.Hidden;
             logger.Info("Приложение запущено");
             try
@@ -53,27 +50,5 @@ namespace Yandex.Forecast
             }
         }
 
-        //Настройка логгера
-        private void LoggerConfig()
-        {
-            LoggingConfiguration config = new LoggingConfiguration();
-
-            FileTarget fileTarget = new FileTarget();
-            config.AddTarget("file", fileTarget);
-
-            fileTarget.DeleteOldFileOnStartup = true;
-            fileTarget.KeepFileOpen = false;
-            fileTarget.ConcurrentWrites = true;
-            fileTarget.Encoding = Encoding.Unicode;
-            fileTarget.ArchiveEvery = FileArchivePeriod.Day;
-            fileTarget.Layout = NLog.Layouts.Layout.FromString("${longdate} | ${uppercase:${level}} | ${message}");
-            fileTarget.FileName = NLog.Layouts.Layout.FromString("${basedir}/logs/${shortdate}.log");
-            fileTarget.ArchiveFileName = NLog.Layouts.Layout.FromString("${basedir}/logs/archives/{shortdate}.rar");
-
-            LoggingRule ruleFile = new LoggingRule("*", LogLevel.Trace, fileTarget);
-            config.LoggingRules.Add(ruleFile);
-
-            LogManager.Configuration = config;
-        }
     }
 }

@@ -11,21 +11,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace Yandex.Forecast
 {
     /// <summary>
     /// Логика взаимодействия для Settings.xaml
     /// </summary>
-    public partial class Settings : Window
+    public partial class SettingsWindow : Window
     {
-        public Settings()
+        public SettingsWindow()
         {
             InitializeComponent();
         }
-
-
-
-
     }
 }

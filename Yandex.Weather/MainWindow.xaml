@@ -9,7 +9,7 @@
     <Window.Resources>
         <ContextMenu x:Key="TrayMenu" >
             <MenuItem Header="Спрятать" Click="ShowHideTray_Click" />
-            <MenuItem Header="Настройки" Click="SettingsTray_Click" />
+            <MenuItem Header="Настройки" Click="button_settings_Click" />
             <Separator/>
             <MenuItem Header="Выход" Click="MenuExitTray_Click"/>
         </ContextMenu>
