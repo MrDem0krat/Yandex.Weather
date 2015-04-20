@@ -16,6 +16,7 @@ using System.Collections.Generic;
 
 namespace Yandex.Forecast
 {
+    // Выпилить файл
     public partial class MainWindow : Window
     {
         

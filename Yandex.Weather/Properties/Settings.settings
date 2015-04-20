@@ -1,7 +1,36 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Yandex.Forecast.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DataBaseUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="DataBaseServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+    <Setting Name="DataBasePort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+    <Setting Name="CanClose" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CityID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">26898</Value>
+    </Setting>
+    <Setting Name="CityName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Брянск</Value>
+    </Setting>
+    <Setting Name="ImagesPath" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">content/graphics/weather_icons/</Value>
+    </Setting>
+    <Setting Name="CityListPath" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">content/xml/CityList.xml</Value>
+    </Setting>
+    <Setting Name="RefreshPeriodID" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
+    <Setting Name="DataBasePassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
 </SettingsFile>

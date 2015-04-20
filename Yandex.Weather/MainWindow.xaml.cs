@@ -15,10 +15,6 @@ using System.Windows.Shapes;
 using WeatherLib;
 using MySql.Data.MySqlClient;
 using NLog;
-using NLog.Config;
-using NLog.Targets;
-using System.Text.RegularExpressions;
-using System.Drawing;
 
 namespace Yandex.Forecast
 {
@@ -27,28 +23,29 @@ namespace Yandex.Forecast
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string city_id = "26894";
-        private string img_path = "content/graphics/weather_icons/";
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        public static System.Windows.Forms.NotifyIcon TrayIcon = new System.Windows.Forms.NotifyIcon();
+        public static ContextMenu TrayMenu = new ContextMenu();
         
         public MainWindow()
         {
             InitializeComponent();
+            Settings.CityName = Properties.Settings.Default.CityName;
             Settings.LoggerConfig();
-            Settings.TrayIconConfig();
+            TrayIcon = Settings.TrayIconConfig();
+            TrayMenu = Resources["TrayMenu"] as ContextMenu;
             GridWeatherWeek.Visibility = Visibility.Hidden;
             logger.Info("Приложение запущено");
             try
             {
-                Weather.LoadWeather(city_id);
+                Weather.LoadWeather(Properties.Settings.Default.CityID);
                 RefreshTodayWeather();
                 logger.Trace("Погода успешно обновлена.");
             }
             catch (Exception e)
             {
-                logger.ErrorException("При обновлении прогноза произошла ошибка: ", e); //Исправить
+                logger.Error(String.Format("При обновлении прогноза произошла ошибка: {0}", e.Source));
             }
         }
-
     }
 }
