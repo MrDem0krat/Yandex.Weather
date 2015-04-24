@@ -30,22 +30,13 @@ namespace Yandex.Forecast
         public MainWindow()
         {
             InitializeComponent();
-            Settings.CityName = Properties.Settings.Default.CityName;
+            logger.Info("Приложение запущено");
             Settings.LoggerConfig();
             TrayIcon = Settings.TrayIconConfig();
             TrayMenu = Resources["TrayMenu"] as ContextMenu;
             GridWeatherWeek.Visibility = Visibility.Hidden;
-            logger.Info("Приложение запущено");
-            try
-            {
-                Weather.LoadWeather(Properties.Settings.Default.CityID);
-                RefreshTodayWeather();
-                logger.Trace("Погода успешно обновлена.");
-            }
-            catch (Exception e)
-            {
-                logger.Error(String.Format("При обновлении прогноза произошла ошибка: {0}", e.Source));
-            }
+            logger.Debug("Настройки успешно загружены");
+            RefreshWeather();
         }
     }
 }

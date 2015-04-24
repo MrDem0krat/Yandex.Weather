@@ -25,42 +25,6 @@ namespace Yandex.Forecast.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("root")]
-        public string DataBaseUser {
-            get {
-                return ((string)(this["DataBaseUser"]));
-            }
-            set {
-                this["DataBaseUser"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
-        public string DataBaseServer {
-            get {
-                return ((string)(this["DataBaseServer"]));
-            }
-            set {
-                this["DataBaseServer"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3306")]
-        public string DataBasePort {
-            get {
-                return ((string)(this["DataBasePort"]));
-            }
-            set {
-                this["DataBasePort"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool CanClose {
             get {
@@ -68,30 +32,6 @@ namespace Yandex.Forecast.Properties {
             }
             set {
                 this["CanClose"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("26898")]
-        public string CityID {
-            get {
-                return ((string)(this["CityID"]));
-            }
-            set {
-                this["CityID"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Брянск")]
-        public string CityName {
-            get {
-                return ((string)(this["CityName"]));
-            }
-            set {
-                this["CityName"] = value;
             }
         }
         
@@ -115,25 +55,22 @@ namespace Yandex.Forecast.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
-        public int RefreshPeriodID {
+        [global::System.Configuration.DefaultSettingValueAttribute("FourHour")]
+        public string RefreshPeriod {
             get {
-                return ((int)(this["RefreshPeriodID"]));
+                return ((string)(this["RefreshPeriod"]));
             }
             set {
-                this["RefreshPeriodID"] = value;
+                this["RefreshPeriod"] = value;
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DataBasePassword {
+        [global::System.Configuration.DefaultSettingValueAttribute("https://pogoda.yandex.ru/static/cities.xml")]
+        public string WebCityListPath {
             get {
-                return ((string)(this["DataBasePassword"]));
-            }
-            set {
-                this["DataBasePassword"] = value;
+                return ((string)(this["WebCityListPath"]));
             }
         }
     }

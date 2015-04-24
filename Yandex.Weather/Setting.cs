@@ -8,32 +8,127 @@ using System.Text;
 using System.Windows;
 using System.Xml;
 using System.Security.Cryptography;
-
+using System.Collections.Generic;
+using WeatherLib;
 
 namespace Yandex.Forecast
 {
     public static class Settings
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static uint[] _RefreshPeriod = { 1, 2, 4, 8 };
-        private static byte[] additionalEntropy = { 4, 9, 5, 6, 3 };
-        private static string _CityName;
-        private static WindowState _CurrentWindowState;
 
         // Период обновления приложения в мс
-        public static uint RefreshPeriod
+        public struct RefreshPeriod
         {
-            get { return _RefreshPeriod[Properties.Settings.Default.RefreshPeriodID]*1800000; }
+            public static RefreshPeriodItem HalfHour = new RefreshPeriodItem("HalfHour", 1800000, 0);
+            public static RefreshPeriodItem Hour = new RefreshPeriodItem("Hour", 3600000, 1);
+            public static RefreshPeriodItem TwoHour = new RefreshPeriodItem("TwoHour", 7200000, 2);
+            public static RefreshPeriodItem FourHour = new RefreshPeriodItem("FourHour", 14400000, 3);
+
+            public static uint FindValue(string _name)
+            {
+                switch(_name)
+                {
+                    default:
+                        return 0;
+                    case "HalfHour":
+                        return HalfHour.Value;
+                    case "Hour":
+                        return Hour.Value;
+                    case "TwoHour":
+                        return TwoHour.Value;
+                    case "FourHour":
+                        return FourHour.Value;
+                }
+            }
+            public static uint FindValue(int _id)
+            {
+                switch(_id)
+                {
+                    default:
+                        return 0;
+                    case 0:
+                        return HalfHour.Value;
+                    case 1:
+                        return Hour.Value;
+                    case 2:
+                        return TwoHour.Value;
+                    case 3:
+                        return FourHour.Value;
+                }
+            }
+
+            public static int FindID(string _name)
+            {
+                switch (_name)
+                {
+                    default:
+                        return -1;
+                    case "HalfHour":
+                        return HalfHour.ID;
+                    case "Hour":
+                        return Hour.ID;
+                    case "TwoHour":
+                        return TwoHour.ID;
+                    case "FourHour":
+                        return FourHour.ID;
+                }
+            }
+            public static int FindID(uint _value)
+            {
+                switch (_value)
+                {
+                    default:
+                        return -1;
+                    case 1800000:
+                        return HalfHour.ID;
+                    case 3600000:
+                        return Hour.ID;
+                    case 7200000:
+                        return TwoHour.ID;
+                    case 14400000:
+                        return FourHour.ID;
+                }
+            }
+
+            public static string FindName(int _id)
+            {
+                switch (_id)
+                {
+                    default:
+                        return null;
+                    case 0:
+                        return HalfHour.Name;
+                    case 1:
+                        return Hour.Name;
+                    case 2:
+                        return TwoHour.Name;
+                    case 3:
+                        return FourHour.Name;
+                }
+            }
+            public static string FindName(uint _value)
+            {
+                switch (_value)
+                {
+                    default:
+                        return null;
+                    case 1800000:
+                        return HalfHour.Name;
+                    case 3600000:
+                        return Hour.Name;
+                    case 7200000:
+                        return TwoHour.Name;
+                    case 14400000:
+                        return FourHour.Name;
+                }
+            }
         }
+
         public static WindowState CurrentWindowState
         {
-            get { return _CurrentWindowState; }
-            set { _CurrentWindowState = value; }
-        }
-        public static string CityName
-        {
-            get { return _CityName; }
-            set { _CityName = value; }
+            get;
+            set;
         }
 
         // Настройка логгера
@@ -58,6 +153,7 @@ namespace Yandex.Forecast
 
             LogManager.Configuration = config;
         }
+
         //Настройка иконки в трее
         public static System.Windows.Forms.NotifyIcon TrayIconConfig()
         {
@@ -78,16 +174,16 @@ namespace Yandex.Forecast
             TrayIcon.Visible = true;
             return TrayIcon;
         }
-        // Проверяем, загружен ли файл со списком городов и их ID
+        
+        // Проверяем, загружен ли файл со списком городов
         public static bool IsCityListLoaded()
         {
-            string webPath = "https://pogoda.yandex.ru/static/cities.xml";
             if(!File.Exists(Properties.Settings.Default.CityListPath))
             {
                 XmlDocument result = new XmlDocument();
-                if(CheckInternet())
+                if(Weather.CheckInternet())
                 {
-                    result.Load(webPath);
+                    result.Load(Properties.Settings.Default.WebCityListPath);
                     result.Save(Properties.Settings.Default.CityListPath);
                     logger.Trace("Список городов успешно загружен.");
                     return true;
@@ -100,45 +196,29 @@ namespace Yandex.Forecast
             }
             return true;
         }
-        //Проверка подключения к интернету
-        public static bool CheckInternet()
+    }
+    public class RefreshPeriodItem
+    {
+        public string Name
         {
-            WebClient client = new WebClient();
-            try
-            {
-                client.DownloadString("http://www.ya.ru");
-                logger.Debug("Проверка доступа в интернет прошла успешно");
-                return true;
-            }
-            catch (WebException ex)
-            {
-                logger.Info(String.Format("Не удалось подключиться к интернету. {0}", ex.Message));
-                return false;
-            }
+            get;
+            set;
         }
-        public static byte[] ProtectPassword(string src)
-        {
-            try
-            {
-                return ProtectedData.Protect(Encoding.UTF8.GetBytes(src),additionalEntropy,DataProtectionScope.CurrentUser);
-            }
-            catch(CryptographicException e)
-            {
-                logger.Debug(String.Format("Не удалось зашифровать данные: {0}",e.ToString()));
-                return null;
-            }
+        public uint Value 
+        { 
+            get; 
+            set; 
         }
-        public static string UnprotectPassword(byte[] src)
+        public int ID
         {
-            try
-            {
-                return Encoding.UTF8.GetString(ProtectedData.Unprotect(src,additionalEntropy,DataProtectionScope.CurrentUser));
-            }
-            catch(CryptographicException e)
-            {
-                logger.Debug(String.Format("Не удалось расшифровать данные: {0}", e.ToString()));
-                return null;
-            }
+            get;
+            set;
+        }
+        public RefreshPeriodItem(string _Name, uint _Value, int _ID)
+        {
+            Name = _Name;
+            Value = _Value;
+            ID = _ID;
         }
     }
 }

@@ -41,10 +41,10 @@
         <Button x:Name="button_forecast_type" Content="Прогноз на 8 дней" Grid.Column="8" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="button_forecast_type_Click"/>
         <Button x:Name="test_button" Content="Test" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="test_button_Click" BorderBrush="{x:Null}" Height="30" Width="80"/>
         <StackPanel Grid.Column="8" Grid.ColumnSpan="5" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Label x:Name="last_refresh" Content="Погода актуальна на 12:37 21.02.2014" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18"/>
-            <Image x:Name="refresh_status_img" />
+        <Label x:Name="last_refresh" Content="Погода актуальна на 12:37 21.02.2014" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18"/>
+        <Image x:Name="refresh_status_img" Source="pack://siteoforigin:,,,/Resources/check.png" Height="30" Width="30" Stretch="UniformToFill"/>
         </StackPanel>
-        <Grid x:Name="GridWeatherDay" Grid.Row="2" Grid.ColumnSpan="14">
+            <Grid x:Name="GridWeatherDay" Grid.Row="2" Grid.ColumnSpan="14">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15"/>
                 <ColumnDefinition Width="*"/>

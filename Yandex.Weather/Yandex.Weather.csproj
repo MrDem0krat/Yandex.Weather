@@ -94,7 +94,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interface.cs" />
-    <Compile Include="DataBaseFunctions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -262,6 +261,12 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\check.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\refresh.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\SettingsIcon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
