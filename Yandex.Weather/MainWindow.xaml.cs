@@ -1,19 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WeatherLib;
-using MySql.Data.MySqlClient;
 using NLog;
 
 namespace Yandex.Forecast
@@ -23,20 +11,25 @@ namespace Yandex.Forecast
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        public static Logger logger = LogManager.GetCurrentClassLogger();
         public static System.Windows.Forms.NotifyIcon TrayIcon = new System.Windows.Forms.NotifyIcon();
         public static ContextMenu TrayMenu = new ContextMenu();
+        public static SplashScreen splash = new SplashScreen("content/graphics/Screen.png");
         
         public MainWindow()
         {
+            Application.Current.MainWindow.Hide();
             InitializeComponent();
-            logger.Info("Приложение запущено");
-            Settings.LoggerConfig();
-            TrayIcon = Settings.TrayIconConfig();
-            TrayMenu = Resources["TrayMenu"] as ContextMenu;
+            Yandex.Forecast.MainWindow.TrayIcon = Settings.TrayIconConfig();
+            Yandex.Forecast.MainWindow.TrayMenu = Resources["TrayMenu"] as ContextMenu;
             GridWeatherWeek.Visibility = Visibility.Hidden;
-            logger.Debug("Настройки успешно загружены");
-            RefreshWeather();
+            Yandex.Forecast.MainWindow.logger.Debug("Настройки успешно загружены");
+            Task.Factory.StartNew(async () =>
+                { 
+                    await RefreshAsync();
+                    splash.Close(TimeSpan.FromSeconds(0.5));
+                    Dispatcher.Invoke(() => Application.Current.MainWindow.Show());
+                });
         }
     }
 }

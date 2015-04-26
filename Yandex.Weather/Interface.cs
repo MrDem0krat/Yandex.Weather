@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 using WeatherLib;
 
 namespace Yandex.Forecast
@@ -48,6 +43,7 @@ namespace Yandex.Forecast
             else
             {
                 TrayIcon.Visible = false;
+                logger.Info("Приложение закрыто");
             }
         }
 
@@ -70,80 +66,91 @@ namespace Yandex.Forecast
             }
         }
         
-        #region Data Refresh functions
-        // Обновление погоды на текущий день
-        private void RefreshTodayWeather()
+        #region DataRefreshAsync
+        // Обновление отображаемого прогноза погоды
+        private async Task RefreshAsync()
         {
-            List<Weather> weatherList;
-            List<object> items;
-            int day_time_now = Weather.DayPart.IndexOf(Weather.Now().PartOfDay) + 1;
-
-            weatherList = Weather.ReadAll();
-            city_name.Content = Weather.CityName;
-
-            //_________Обновление погоды сейчас (fact)________________
-            items = new List<object>();
-            items.Add(img_info_today_now);
-            items.Add(temperature_info_today_now);
-            items.Add(wind_info_today_now);
-            items.Add(pressure_info_today_now);
-            items.Add(humidity_info_today_now);
-            items.Add(weather_type_info_today_now);
-            items.Add(last_refresh);
-            foreach (object item in items)
-            {
-                RefreshDaypart(item, Weather.Now());
-            }
-
-            //_________Обновление прогноза на ближайшие сутки_________
-            for (int part = 0; part < 4; part++)
-            {
-                items = new List<object>();
-                items.Add(GridWeatherDay.FindName(String.Format("temperature_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                items.Add(GridWeatherDay.FindName(String.Format("wind_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                items.Add(GridWeatherDay.FindName(String.Format("pressure_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                items.Add(GridWeatherDay.FindName(String.Format("humidity_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                items.Add(GridWeatherDay.FindName(String.Format("weather_type_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                items.Add(GridWeatherDay.FindName(String.Format("daypart_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                items.Add(GridWeatherDay.FindName(String.Format("img_info_today_{0}", Weather.DayPart.ValueOf(part))));
-
-                foreach (object item in items)
-                {
-                    RefreshDaypart(item, weatherList[part + day_time_now]);
-                }
-            }
-            logger.Trace("Погода успешно обновлена.");
-        }
-
-        // Обновление погоды на 4 дня
-        private void RefreshWeekWeather(int start_day)
+            Dispatcher.Invoke(() => RotateStatusImg(true));
+            await Weather.LoadAsync();
+            await RefreshTodayAsync();
+            if (Dispatcher.Invoke(() => { return button_move_right.IsEnabled; }))
+                await RefreshWeekAsync(0);
+            else
+                await RefreshWeekAsync(4);
+            Dispatcher.Invoke(() => RotateStatusImg(false));
+        } 
+        // Обновление погоды на ближайшие сутки
+        private async Task RefreshTodayAsync()
         {
-            List<object> items;
-            List<Weather> weather;
-            weather = Weather.ReadAll();
+            List<Weather> weather; //Weather forecast
+            List<object> IItems; //Interface Items
+            Weather now = await Weather.NowAsync();
+            int DayPartNow = Weather.DayPart.IndexOf(now.PartOfDay) + 1;
+            weather = await Weather.ReadAllAsync();
+            Dispatcher.Invoke(() => { city_name.Content = Weather.CityName; });
 
-            for (int part = 0; part < 2; part++)
-            {
-                for (int day = 1; day <= 4; day++)
+            // Обновление прогноза на текущий момент времени 
+            IItems = new List<object>();
+            IItems.Add(img_info_today_now);
+            IItems.Add(temperature_info_today_now);
+            IItems.Add(wind_info_today_now);
+            IItems.Add(pressure_info_today_now);
+            IItems.Add(humidity_info_today_now);
+            IItems.Add(weather_type_info_today_now);
+            IItems.Add(last_refresh);
+            Dispatcher.Invoke(() =>
                 {
-                    items = new List<object>();
-                    items.Add(GridWeatherWeek.FindName(String.Format("date_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 +1), day)));
-                    items.Add(GridWeatherWeek.FindName(String.Format("img_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                    items.Add(GridWeatherWeek.FindName(String.Format("temperature_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                    items.Add(GridWeatherWeek.FindName(String.Format("wind_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                    items.Add(GridWeatherWeek.FindName(String.Format("pressure_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                    items.Add(GridWeatherWeek.FindName(String.Format("humidity_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                    items.Add(GridWeatherWeek.FindName(String.Format("weather_type_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                    foreach (object item in IItems)
+                        RefreshDaypart(item, now);
 
-                    foreach (object item in items)
+                    //Обновление прогноза на ближайшие сутки
+                    for (int part = 0; part < 4; part++)
                     {
-                        RefreshDaypart(item, weather[(start_day + day) * 4 + (part * 2 + 1)]);
+                        IItems = new List<object>();
+                        IItems.Add(GridWeatherDay.FindName(String.Format("temperature_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("wind_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("pressure_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("humidity_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("weather_type_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("daypart_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("img_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        foreach (object item in IItems)
+                        {
+                            RefreshDaypart(item, weather[part + DayPartNow]);
+                        }
                     }
-                }
-            }
+                });
+            logger.Trace("Погода успешно обновлена");
+        } 
+        // Обновление погоды на неделю
+        private async Task RefreshWeekAsync(int StartFromDay)
+        {
+            List<object> IItems;
+            List<Weather> weather;
+            weather = await Weather.ReadAllAsync();
+            Dispatcher.Invoke(() =>
+                {
+                    for (int part = 0; part < 2; part++)
+                    {
+                        for (int day = 1; day <= 4; day++)
+                        {
+                            IItems = new List<object>();
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("date_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("img_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("temperature_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("wind_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("pressure_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("humidity_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("weather_type_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            foreach (object item in IItems)
+                            {
+                                RefreshDaypart(item, weather[(StartFromDay + day) * 4 + (part * 2 + 1)]);
+                            }
+                        }
+                    }
+                });
             logger.Debug("Погода на неделю успешно обновлена");
         }
-
         // Обновление погоды на часть дня
         private void RefreshDaypart(object item, Weather weather)
         {
@@ -183,20 +190,32 @@ namespace Yandex.Forecast
                 image.ToolTip = weather.Condition;
             }
         }
-        public void RefreshWeather()
+        //Вращение изображения отображающего статус обновления
+        private void RotateStatusImg(bool Rotate)
         {
-            // добавить try..catch
-            Weather.Load(Weather.CityID);
-            RefreshTodayWeather();
-            RefreshWeekWeather(0);
-            logger.Info("Прогноз погоды успешно обновлен.");
-        }
+            if (Rotate)
+            {
+                imgStatusRefresh.Source = new BitmapImage(new Uri("pack://siteoforigin:,,,/Resources/refresh.png", UriKind.RelativeOrAbsolute));
+                DoubleAnimation dAnimation = new DoubleAnimation(0, 360, new Duration(TimeSpan.FromSeconds(3)));
+                RotateTransform RotateTransform = new RotateTransform();
+                imgStatusRefresh.RenderTransform = RotateTransform;
+                imgStatusRefresh.RenderTransformOrigin = new Point(0.5, 0.5);
+                dAnimation.RepeatBehavior = RepeatBehavior.Forever;
+                RotateTransform.BeginAnimation(RotateTransform.AngleProperty, dAnimation);
+            }
+            else
+            {
+                imgStatusRefresh.Source = new BitmapImage(new Uri("pack://siteoforigin:,,,/Resources/check.png", UriKind.RelativeOrAbsolute));
+                imgStatusRefresh.RenderTransform = new RotateTransform();
+            }
+        } 
         #endregion
+        
         #region Buttons
         //Обработчики нажатий кнопок главного окна
         private void button_load_Click(object sender, RoutedEventArgs e)
         {
-            RefreshWeather();
+            Task.Factory.StartNew(() => RefreshAsync());
         }
         private void button_settings_Click(object sender, RoutedEventArgs e)
         {
@@ -205,6 +224,7 @@ namespace Yandex.Forecast
             {
                 Weather.CityName = settingsWnd.cityNameBox.SelectedItem.ToString();
                 Weather.CityID = settingsWnd.cityNameBox.SelectedValue.ToString();
+                Weather.CityNameEng = Weather.ReadCityNameEng();
                 Properties.Settings.Default.RefreshPeriod = Settings.RefreshPeriod.FindName(settingsWnd.RefreshPeriodBox.SelectedIndex);
                 Properties.Settings.Default.CanClose = !settingsWnd.MinimazeTrayBox.IsChecked.Value;
                 WeatherDatabase.User = settingsWnd.LoginBox.Text;
@@ -223,7 +243,6 @@ namespace Yandex.Forecast
                 GridWeatherDay.Visibility = Visibility.Hidden;
                 GridWeatherWeek.Visibility = Visibility.Visible;
                 button_forecast_type.Content = "Прогноз на сегодня";
-                RefreshWeekWeather(0);
                 button_move_left.IsEnabled = false;
                 button_move_right.IsEnabled = true;
             }
@@ -236,13 +255,13 @@ namespace Yandex.Forecast
         }
         private void button_last_days_Click(object sender, RoutedEventArgs e)
         {
-            RefreshWeekWeather(4);
+            Task.Factory.StartNew(() => RefreshWeekAsync(4));
             button_move_right.IsEnabled = false;
             button_move_left.IsEnabled = true;
         }
         private void button_first_days_Click(object sender, RoutedEventArgs e)
         {
-            RefreshWeekWeather(0);
+            Task.Factory.StartNew(() => RefreshWeekAsync(0));
             button_move_left.IsEnabled = false;
             button_move_right.IsEnabled = true;
         }
@@ -259,19 +278,17 @@ namespace Yandex.Forecast
         private void test_button_Click(object sender, RoutedEventArgs e)
         {
             logger.Trace("Нажата тестовая кнопка настроек");
-            Weather weather = new Weather();
-            try
-            {
-                if (WeatherDatabase.BaseCheck())
+            RotateStatusImg(true);
+            Task.Factory.StartNew(async () =>
                 {
-                    weather = Weather.Now();
-                    WeatherDatabase.WriteToBase(weather);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(String.Format("В тестовом методе '{0}' произошла ошибка: {1}, источник: {2}", ex.TargetSite, ex.Message, ex.Source));
-            }
+                    Weather weather = new Weather();
+                    if (await WeatherDatabase.CheckAsync())
+                    {
+                        weather = await Weather.NowAsync();
+                        await WeatherDatabase.WriteAsync(weather);
+                    }
+                    Dispatcher.Invoke(() => RotateStatusImg(false));
+                });
         }
         #endregion
     }
