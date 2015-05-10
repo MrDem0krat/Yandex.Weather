@@ -15,7 +15,6 @@ namespace Yandex.Forecast
     public partial class MainWindow : Window
     {
         private SettingsWindow settingsWnd;
-  
         // Перегрузка обработчиков событий сворачивания и закрытия главного окна
         protected override void OnStateChanged(EventArgs e)
         {
@@ -42,11 +41,12 @@ namespace Yandex.Forecast
             }
             else
             {
+                Weather.SaveAuthData();
+                Properties.Settings.Default.Save();
                 TrayIcon.Visible = false;
                 logger.Info("Приложение закрыто");
             }
         }
-
         public static void ShowHideMainWindow()
         {
             if (Application.Current.MainWindow.WindowState != WindowState.Minimized)
@@ -232,7 +232,6 @@ namespace Yandex.Forecast
                 WeatherDatabase.Port = uint.Parse(settingsWnd.PortBox.Text);
                 if (settingsWnd.PasswordBox.Password != "    ")
                     WeatherDatabase.Password = settingsWnd.PasswordBox.Password;
-                WeatherDatabase.SaveAuthData();
                 Properties.Settings.Default.Save();
             }
         }
