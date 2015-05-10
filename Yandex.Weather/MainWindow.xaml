@@ -3,14 +3,12 @@
         xmlns:resx="clr-namespace:Yandex.Forecast.Properties"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:local="clr-namespace:Yandex.Forecast"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Name="MainFrame" x:Class="Yandex.Forecast.MainWindow"
         Title="Информер погоды" Height="685" Width="920" Icon="pack://siteoforigin:,,,/Resources/icon.ico" ScrollViewer.VerticalScrollBarVisibility="Disabled" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Window.Background>
         <ImageBrush ImageSource="content/graphics/back1.jpg" />
     </Window.Background>
     <Window.Resources>
-        <resx:Resources x:Key="Source" />
         <ContextMenu x:Key="TrayMenu" >
         <MenuItem Header="Спрятать" Click="ShowHideTray_Click" />
         <MenuItem Header="Настройки" Click="button_settings_Click" />
@@ -65,6 +63,29 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="stdStyle" TargetType="{x:Type Control}">
+            <Setter Property="FontFamily" Value="/Yandex.Weather;component/content/#Segoe WP Light"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{x:Null}"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource stdStyle}"/>
+        <Style TargetType="Label" BasedOn="{StaticResource stdStyle}"/>
+        <Style x:Key="Rect" TargetType="Rectangle">
+            <Setter Property="Fill" Value="#5E237CFF"/>
+            <Setter Property="RadiusX" Value="5"/>
+            <Setter Property="RadiusY" Value="5"/>
+        </Style>
+        <Style x:Key="RectNight" TargetType="Rectangle" BasedOn="{StaticResource Rect}">
+            <Setter Property="Fill" Value="#B70C2C5B"/>
+        </Style>
+        <Style x:Key="RectDay" TargetType="Rectangle" BasedOn="{StaticResource Rect}">
+            <Setter Property="Fill" Value="#7F237CFF"/>
+        </Style>
+        <Style TargetType="Rectangle" BasedOn="{StaticResource Rect}"/>
+
     </Window.Resources>
     <Grid x:Name="GridMainWnd">
         <Grid.ColumnDefinitions>
@@ -88,15 +109,15 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button x:Name="button_settings" Content="Настройки" Grid.Column="12"   Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="button_settings_Click"/>
-        <Button x:Name="button_load" Content="Обновить" Grid.Column="10"   Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="button_load_Click"/>
-        <Button x:Name="button_forecast_type" Content="Прогноз на 8 дней" Grid.Column="8" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="button_forecast_type_Click"/>
-        <Button x:Name="test_button" Content="Test" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="test_button_Click" BorderBrush="{x:Null}" Height="30" Width="80"/>
+        <Button x:Name="button_settings" Content="Настройки" Grid.Column="12" Click="button_settings_Click"/>
+        <Button x:Name="button_load" Content="Обновить" Grid.Column="10" Click="button_load_Click"/>
+        <Button x:Name="button_forecast_type" Content="Прогноз на 8 дней" Grid.Column="8" Click="button_forecast_type_Click"/>
+        <Button x:Name="test_button" Content="Test" Grid.Column="6" Click="test_button_Click" BorderBrush="{x:Null}"/>
         <StackPanel Grid.Column="8" Grid.ColumnSpan="5" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Label x:Name="last_refresh" Content="Погода актуальна на 12:37 21.02.2014" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18"/>
+            <Label x:Name="last_refresh" Content="Погода актуальна на 12:37 21.02.2014" />
             <Image x:Name="imgStatusRefresh" Source="pack://siteoforigin:,,,/Resources/check.png" Height="30" Width="30" Stretch="UniformToFill"/>
         </StackPanel>
-        <Grid x:Name="GridWeatherDay" Grid.Row="2" Grid.ColumnSpan="14">
+        <Grid x:Name="GridWeatherDay" Grid.Row="2" Grid.ColumnSpan="14" d:IsHidden="True" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15"/>
                 <ColumnDefinition Width="*"/>
@@ -128,56 +149,57 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-
             <!--today forecast-->
             <Image x:Name="img_info_today_now" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2" Grid.RowSpan="4" />
-            <Label x:Name="city_name" Grid.ColumnSpan="4" Content="Название города" Grid.Column="1" Grid.Row="0" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="32"/>
-            <Rectangle Grid.ColumnSpan="4" Grid.Column="8" Fill="#237cff" Opacity="0.65"  Grid.Row="2" Grid.RowSpan="4" />
-            <Label x:Name="wind_info_today_now" Grid.ColumnSpan="4" Content="Label" VerticalContentAlignment="Center" Grid.Column="8" Grid.Row="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="20" Foreground="White"/>
-            <Label x:Name="pressure_info_today_now" Grid.ColumnSpan="4" Content="Label" VerticalContentAlignment="Center" Grid.Column="8" Grid.Row="3" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="20" Foreground="White"/>
-            <Label x:Name="humidity_info_today_now" Grid.ColumnSpan="4" Content="Label" VerticalContentAlignment="Center" Grid.Column="8" Grid.Row="4" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="20" Foreground="White"/>
-            <Label x:Name="weather_type_info_today_now" Grid.ColumnSpan="4" Content="Label"  VerticalContentAlignment="Center" Grid.Column="8" Grid.Row="5" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="20" Foreground="White"/>
-            <Label x:Name="temperature_info_today_now" Grid.ColumnSpan="4" Content="+21°С" Grid.Column="4" Grid.Row="2" Grid.RowSpan="4" FontFamily="/Yandex.Weather;component/content/#Segoe WP" FontSize="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
+            <Label x:Name="city_name" Content="Название города" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="0" FontSize="32"/>
+            <Rectangle Grid.ColumnSpan="4" Fill="#A5237CFF" Grid.Column="8" Grid.Row="2" Grid.RowSpan="4" />
+            <Label x:Name="wind_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="2" FontSize="20"/>
+            <Label x:Name="pressure_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="3" FontSize="20"/>
+            <Label x:Name="humidity_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="4" FontSize="20"/>
+            <Label x:Name="weather_type_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="5" FontSize="20"/>
+            <Label x:Name="temperature_info_today_now" Grid.ColumnSpan="4" Content="+21°С" Grid.Column="4" Grid.Row="2" Grid.RowSpan="4" FontSize="145" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <!--Morning-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="1" Fill="#237cff" Opacity="0.37" Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_morning" Content="Утро" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="temperature_info_today_morning" Grid.ColumnSpan="1" Content="Label" Grid.Column="2"   Grid.Row="8"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="38" Foreground="White"/>
+            <Rectangle Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="7" Grid.RowSpan="6" />
+            <Label x:Name="daypart_info_today_morning" Content="Утро" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="2"/>
+            <Label x:Name="temperature_info_today_morning" Grid.ColumnSpan="1" Content="Label" Grid.Column="2" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
             <Image x:Name="img_info_today_morning" Grid.Column="1"  Grid.Row="8"  Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1"  Grid.Row="9"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White" />
-            <Label x:Name="pressure_info_today_morning" Content="Label" Grid.Column="1"  Grid.Row="10"  Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="humidity_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1"  Grid.Row="11"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="weather_type_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1"  Grid.Row="12"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
+            <Label x:Name="wind_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1" Grid.Row="9"/>
+            <Label x:Name="pressure_info_today_morning" Content="Label" Grid.Column="1" Grid.Row="10" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1" Grid.Row="11"/>
+            <Label x:Name="weather_type_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1" Grid.Row="12"/>
             <!--Day-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="4" Fill="#237cff" Opacity="0.37" Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_day" Content="День" HorizontalContentAlignment="Center" Grid.Column="4" Grid.Row="7" Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="temperature_info_today_day" Grid.ColumnSpan="1" Content="Label" Grid.Column="5"   Grid.Row="8"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="38" Foreground="White"/>
-            <Image x:Name="img_info_today_day" Grid.Column="4"  Grid.Row="8"  Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4"  Grid.Row="9"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="pressure_info_today_day" Content="Label" Grid.Column="4"  Grid.Row="10"  Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="humidity_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4"  Grid.Row="11"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="weather_type_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4"  Grid.Row="12"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
+            <Rectangle Grid.ColumnSpan="2" Grid.Column="4" Grid.Row="7" Grid.RowSpan="6" />
+            <Label x:Name="daypart_info_today_day" Content="День" HorizontalContentAlignment="Center" Grid.Column="4" Grid.Row="7" Grid.ColumnSpan="2"/>
+            <Label x:Name="temperature_info_today_day" Grid.ColumnSpan="1" Content="Label" Grid.Column="5" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
+            <Image x:Name="img_info_today_day" Grid.Column="4" Grid.Row="8" Grid.ColumnSpan="1"/>
+            <Label x:Name="wind_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4" Grid.Row="9"/>
+            <Label x:Name="pressure_info_today_day" Content="Label" Grid.Column="4" Grid.Row="10" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4" Grid.Row="11"/>
+            <Label x:Name="weather_type_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4" Grid.Row="12"/>
             <!--Evening-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="7" Fill="#237cff" Opacity="0.37"  Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_evening" Content="Вечер" HorizontalContentAlignment="Center" Grid.Column="7" Grid.Row="7" Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="temperature_info_today_evening" Grid.ColumnSpan="1" Content="Label" Grid.Column="8"   Grid.Row="8"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="38" Foreground="White"/>
-            <Image x:Name="img_info_today_evening" Grid.Column="7"  Grid.Row="8"  Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7"  Grid.Row="9"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="pressure_info_today_evening" Content="Label" Grid.Column="7"  Grid.Row="10"  Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="humidity_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7"  Grid.Row="11"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="weather_type_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7"  Grid.Row="12"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
+            <Rectangle Grid.ColumnSpan="2" Grid.Column="7" Grid.Row="7" Grid.RowSpan="6" />
+            <Label x:Name="daypart_info_today_evening" Content="Вечер" HorizontalContentAlignment="Center" Grid.Column="7" Grid.Row="7" Grid.ColumnSpan="2"/>
+            <Label x:Name="temperature_info_today_evening" Grid.ColumnSpan="1" Content="Label" Grid.Column="8" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
+            <Image x:Name="img_info_today_evening" Grid.Column="7" Grid.Row="8" Grid.ColumnSpan="1"/>
+            <Label x:Name="wind_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7" Grid.Row="9"/>
+            <Label x:Name="pressure_info_today_evening" Content="Label" Grid.Column="7" Grid.Row="10" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7" Grid.Row="11"/>
+            <Label x:Name="weather_type_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7" Grid.Row="12"/>
             <!--Nigth-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="10" Fill="#237cff" Opacity="0.37"  Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_night" Content="Ночь" HorizontalContentAlignment="Center" Grid.Column="10" Grid.Row="7" Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="temperature_info_today_night" Grid.ColumnSpan="1" Content="Label" Grid.Column="11"   Grid.Row="8"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="38" Foreground="White"/>
-            <Image x:Name="img_info_today_night" Grid.Column="10"  Grid.Row="8"  Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10"  Grid.Row="9"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="pressure_info_today_night" Content="Label" Grid.Column="10"  Grid.Row="10"  Grid.ColumnSpan="2" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="humidity_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10"  Grid.Row="11"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
-            <Label x:Name="weather_type_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10"  Grid.Row="12"  FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Foreground="White"/>
+            <Rectangle Grid.ColumnSpan="2" Grid.Column="10" Grid.Row="7" Grid.RowSpan="6" />
+            <Label x:Name="daypart_info_today_night" Content="Ночь" HorizontalContentAlignment="Center" Grid.Column="10" Grid.Row="7" Grid.ColumnSpan="2"/>
+            <Label x:Name="temperature_info_today_night" Grid.ColumnSpan="1" Content="Label" Grid.Column="11" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
+            <Image x:Name="img_info_today_night" Grid.Column="10" Grid.Row="8" Grid.ColumnSpan="1"/>
+            <Label x:Name="wind_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10" Grid.Row="9"/>
+            <Label x:Name="pressure_info_today_night" Content="Label" Grid.Column="10"  Grid.Row="10"  Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10" Grid.Row="11"/>
+            <Label x:Name="weather_type_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10" Grid.Row="12"/>
         </Grid>
-        <Grid x:Name="GridWeatherWeek" Grid.Row="2" Grid.ColumnSpan="14" d:IsHidden="True" >
+        <Grid x:Name="GridWeatherWeek" Grid.Row="2" Grid.ColumnSpan="14" >
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
@@ -189,7 +211,9 @@
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="5"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="15"/>
@@ -209,84 +233,84 @@
                 <RowDefinition Height="15"/>
             </Grid.RowDefinitions>
             <!--Control buttons-->
-            <Button x:Name="button_move_left" Style="{StaticResource ArrowButton}" IsEnabled="False" Grid.Column="0" Grid.Row="6" Grid.RowSpan="3" Click="button_first_days_Click">
+            <Button x:Name="button_move_left" Style="{StaticResource ArrowButton}" IsEnabled="False" Grid.Column="1" Grid.Row="6" Grid.RowSpan="3" Click="button_first_days_Click">
                 <Path Data="M7.701,14.276l9.586-9.585c0.879-0.878,2.317-0.878,3.195,0l0.801,0.8c0.878,0.877,0.878,2.316,0,3.194  L13.968,16l7.315,7.315c0.878,0.878,0.878,2.317,0,3.194l-0.801,0.8c-0.878,0.879-2.316,0.879-3.195,0l-9.586-9.587  C7.229,17.252,7.02,16.62,7.054,16C7.02,15.38,7.229,14.748,7.701,14.276z"/>
             </Button>
-            <Button x:Name="button_move_right" Style="{StaticResource ArrowButton}" IsEnabled="True" Grid.Column="12" Grid.Row="6" Grid.RowSpan="3" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF2DAE11" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" Click="button_last_days_Click">
+            <Button x:Name="button_move_right" Style="{StaticResource ArrowButton}" IsEnabled="True" Grid.Column="15" Grid.Row="6" Grid.RowSpan="3" Click="button_last_days_Click">
                 <Path Data="M24.291,14.276L14.705,4.69c-0.878-0.878-2.317-0.878-3.195,0l-0.8,0.8c-0.878,0.877-0.878,2.316,0,3.194  L18.024,16l-7.315,7.315c-0.878,0.878-0.878,2.317,0,3.194l0.8,0.8c0.878,0.879,2.317,0.879,3.195,0l9.586-9.587  c0.472-0.471,0.682-1.103,0.647-1.723C24.973,15.38,24.763,14.748,24.291,14.276z"/>
             </Button>
             <!-- Day 1 -->
-            <Rectangle Grid.Row="1" Grid.RowSpan="6" Grid.Column="1" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_day_1" Content="Date_1" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_1" Grid.Row="2" Grid.Column="1"/>
-            <Label x:Name="temperature_info_day_1" Content="+25°C" Grid.Row="2" Grid.Column="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_1" Content="Wind_1" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_day_1" Content="Pressure_1" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_day_1" Content="Humidity_1" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_day_1" Content="Weather_Type_1" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_day_1" Content="Date_1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_day_1" Grid.Row="2" Grid.Column="3"/>
+            <Label x:Name="temperature_info_day_1" Content="+25°C" Grid.Row="2" Grid.Column="4" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_day_1" Content="Wind_1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_day_1" Content="Pressure_1" Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_day_1" Content="Humidity_1" Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_day_1" Content="Weather_Type_1" Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2"/>
             <!-- Day 2 -->
-            <Rectangle Grid.Row="1" Grid.RowSpan="6" Grid.Column="4" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_day_2" Content="Date_1" Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_2" Grid.Row="2" Grid.Column="4"/>
-            <Label x:Name="temperature_info_day_2" Content="+25°C" Grid.Row="2" Grid.Column="5" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_2" Content="Wind_1" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_day_2" Content="Pressure_1" Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_day_2" Content="Humidity_1" Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_day_2" Content="Weather_Type_1" Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_day_2" Content="Date_1" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_day_2" Grid.Row="2" Grid.Column="6"/>
+            <Label x:Name="temperature_info_day_2" Content="+25°C" Grid.Row="2" Grid.Column="7" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_day_2" Content="Wind_1" Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_day_2" Content="Pressure_1" Grid.Row="4" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_day_2" Content="Humidity_1" Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_day_2" Content="Weather_Type_1" Grid.Row="6" Grid.Column="6" Grid.ColumnSpan="2"/>
             <!-- Day 3 -->
-            <Rectangle Grid.Row="1" Grid.RowSpan="6" Grid.Column="7" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_day_3" Content="Date_1" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_3" Grid.Row="2" Grid.Column="7"/>
-            <Label x:Name="temperature_info_day_3" Content="+25°C" Grid.Row="2" Grid.Column="8" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_3" Content="Wind_1" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_day_3" Content="Pressure_1" Grid.Row="4" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_day_3" Content="Humidity_1" Grid.Row="5" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_day_3" Content="Weather_Type_1" Grid.Row="6" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_day_3" Content="Date_1" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_day_3" Grid.Row="2" Grid.Column="9"/>
+            <Label x:Name="temperature_info_day_3" Content="+25°C" Grid.Row="2" Grid.Column="10" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_day_3" Content="Wind_1" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_day_3" Content="Pressure_1" Grid.Row="4" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_day_3" Content="Humidity_1" Grid.Row="5" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_day_3" Content="Weather_Type_1" Grid.Row="6" Grid.Column="9" Grid.ColumnSpan="2"/>
             <!-- Day 4 -->
-            <Rectangle Grid.Row="1" Grid.RowSpan="6" Grid.Column="10" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_day_4" Content="Date_1" Grid.Row="1" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_4" Grid.Row="2" Grid.Column="10"/>
-            <Label x:Name="temperature_info_day_4" Content="+25°C" Grid.Row="2" Grid.Column="11" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_4" Content="Wind_1" Grid.Row="3" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_day_4" Content="Pressure_1" Grid.Row="4" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_day_4" Content="Humidity_1" Grid.Row="5" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_day_4" Content="Weather_Type_1" Grid.Row="6" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_day_4" Content="Date_1" Grid.Row="1" Grid.Column="12" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_day_4" Grid.Row="2" Grid.Column="12"/>
+            <Label x:Name="temperature_info_day_4" Content="+25°C" Grid.Row="2" Grid.Column="13" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_day_4" Content="Wind_1" Grid.Row="3" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_day_4" Content="Pressure_1" Grid.Row="4" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_day_4" Content="Humidity_1" Grid.Row="5" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_day_4" Content="Weather_Type_1" Grid.Row="6" Grid.Column="12" Grid.ColumnSpan="2"/>
             <!-- Night 1 -->
-            <Rectangle Grid.Row="8" Grid.RowSpan="6" Grid.Column="1" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_night_1" Content="Date_1" Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_1" Grid.Row="9" Grid.Column="1"/>
-            <Label x:Name="temperature_info_night_1" Content="+25°C" Grid.Row="9" Grid.Column="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_1" Content="Wind_1" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_night_1" Content="Pressure_1" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_night_1" Content="Humidity_1" Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_night_1" Content="Weather_Type_1" Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_night_1" Content="Date_1" Grid.Row="8" Grid.Column="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_night_1" Grid.Row="9" Grid.Column="3"/>
+            <Label x:Name="temperature_info_night_1" Content="+25°C" Grid.Row="9" Grid.Column="4" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_night_1" Content="Wind_1" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_night_1" Content="Pressure_1" Grid.Row="11" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_night_1" Content="Humidity_1" Grid.Row="12" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_night_1" Content="Weather_Type_1" Grid.Row="13" Grid.Column="3" Grid.ColumnSpan="2"/>
             <!-- Night 2 -->
-            <Rectangle Grid.Row="8" Grid.RowSpan="6" Grid.Column="4" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_night_2" Content="Date_1" Grid.Row="8" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_2" Grid.Row="9" Grid.Column="4"/>
-            <Label x:Name="temperature_info_night_2" Content="+25°C" Grid.Row="9" Grid.Column="5" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_2" Content="Wind_1" Grid.Row="10" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_night_2" Content="Pressure_1" Grid.Row="11" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_night_2" Content="Humidity_1" Grid.Row="12" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_night_2" Content="Weather_Type_1" Grid.Row="13" Grid.Column="4" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_night_2" Content="Date_1" Grid.Row="8" Grid.Column="6" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_night_2" Grid.Row="9" Grid.Column="6"/>
+            <Label x:Name="temperature_info_night_2" Content="+25°C" Grid.Row="9" Grid.Column="7" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_night_2" Content="Wind_1" Grid.Row="10" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_night_2" Content="Pressure_1" Grid.Row="11" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_night_2" Content="Humidity_1" Grid.Row="12" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_night_2" Content="Weather_Type_1" Grid.Row="13" Grid.Column="6" Grid.ColumnSpan="2"/>
             <!-- Night 3 -->
-            <Rectangle Grid.Row="8" Grid.RowSpan="6" Grid.Column="7" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_night_3" Content="Date_1" Grid.Row="8" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_3" Grid.Row="9" Grid.Column="7"/>
-            <Label x:Name="temperature_info_night_3" Content="+25°C" Grid.Row="9" Grid.Column="8" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_3" Content="Wind_1" Grid.Row="10" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_night_3" Content="Pressure_1" Grid.Row="11" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_night_3" Content="Humidity_1" Grid.Row="12" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_night_3" Content="Weather_Type_1" Grid.Row="13" Grid.Column="7" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_night_3" Content="Date_1" Grid.Row="8" Grid.Column="9" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_night_3" Grid.Row="9" Grid.Column="9"/>
+            <Label x:Name="temperature_info_night_3" Content="+25°C" Grid.Row="9" Grid.Column="10" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_night_3" Content="Wind_1" Grid.Row="10" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_night_3" Content="Pressure_1" Grid.Row="11" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_night_3" Content="Humidity_1" Grid.Row="12" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_night_3" Content="Weather_Type_1" Grid.Row="13" Grid.Column="9" Grid.ColumnSpan="2"/>
             <!-- Night 4 -->
-            <Rectangle Grid.Row="8" Grid.RowSpan="6" Grid.Column="10" Grid.ColumnSpan="2" Fill="#237cff" Opacity="0.50"/>
-            <Label x:Name="date_info_night_4" Content="Date_1" Grid.Row="8" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_4" Grid.Row="9" Grid.Column="10"/>
-            <Label x:Name="temperature_info_night_4" Content="+25°C" Grid.Row="9" Grid.Column="11" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="34" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_4" Content="Wind_1" Grid.Row="10" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="pressure_info_night_4" Content="Pressure_1" Grid.Row="11" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="humidity_info_night_4" Content="Humidity_1" Grid.Row="12" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
-            <Label x:Name="weather_type_info_night_4" Content="Weather_Type_1" Grid.Row="13" Grid.Column="10" Grid.ColumnSpan="2" Foreground="White" FontFamily="/Yandex.Weather;component/content/#Segoe WP Light" FontSize="18" VerticalContentAlignment="Center"/>
+            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="date_info_night_4" Content="Date_1" Grid.Row="8" Grid.Column="12" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
+            <Image x:Name="img_info_night_4" Grid.Row="9" Grid.Column="12"/>
+            <Label x:Name="temperature_info_night_4" Content="+25°C" Grid.Row="9" Grid.Column="13" FontSize="34" HorizontalContentAlignment="Center"/>
+            <Label x:Name="wind_info_night_4" Content="Wind_1" Grid.Row="10" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="pressure_info_night_4" Content="Pressure_1" Grid.Row="11" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="humidity_info_night_4" Content="Humidity_1" Grid.Row="12" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Label x:Name="weather_type_info_night_4" Content="Weather_Type_1" Grid.Row="13" Grid.Column="12" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>
