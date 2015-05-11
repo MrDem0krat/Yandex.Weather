@@ -65,7 +65,6 @@ namespace Yandex.Forecast
                 Application.Current.MainWindow.Activate();
             }
         }
-        
         #region DataRefreshAsync
         // Обновление отображаемого прогноза погоды
         private async Task RefreshAsync()
@@ -73,7 +72,7 @@ namespace Yandex.Forecast
             Dispatcher.Invoke(() => RotateStatusImg(true));
             await Weather.LoadAsync();
             await RefreshTodayAsync();
-            if (Dispatcher.Invoke(() => { return button_move_right.IsEnabled; }))
+            if (Dispatcher.Invoke(() => { return btnMoveRight.IsEnabled; }))
                 await RefreshWeekAsync(0);
             else
                 await RefreshWeekAsync(4);
@@ -87,17 +86,17 @@ namespace Yandex.Forecast
             Weather now = await Weather.NowAsync();
             int DayPartNow = Weather.DayPart.IndexOf(now.PartOfDay) + 1;
             weather = await Weather.ReadAllAsync();
-            Dispatcher.Invoke(() => { city_name.Content = Weather.CityName; });
+            Dispatcher.Invoke(() => { lblCityName.Content = Weather.CityName; });
 
             // Обновление прогноза на текущий момент времени 
             IItems = new List<object>();
-            IItems.Add(img_info_today_now);
-            IItems.Add(temperature_info_today_now);
-            IItems.Add(wind_info_today_now);
-            IItems.Add(pressure_info_today_now);
-            IItems.Add(humidity_info_today_now);
-            IItems.Add(weather_type_info_today_now);
-            IItems.Add(last_refresh);
+            IItems.Add(imgWeatherNow);
+            IItems.Add(lblTemperatureNow);
+            IItems.Add(lblWindNow);
+            IItems.Add(lblPressureNow);
+            IItems.Add(lblHumidityNow);
+            IItems.Add(lblWeatherTypeNow);
+            IItems.Add(lblLastRefresh);
             Dispatcher.Invoke(() =>
                 {
                     foreach (object item in IItems)
@@ -107,13 +106,14 @@ namespace Yandex.Forecast
                     for (int part = 0; part < 4; part++)
                     {
                         IItems = new List<object>();
-                        IItems.Add(GridWeatherDay.FindName(String.Format("temperature_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                        IItems.Add(GridWeatherDay.FindName(String.Format("wind_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                        IItems.Add(GridWeatherDay.FindName(String.Format("pressure_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                        IItems.Add(GridWeatherDay.FindName(String.Format("humidity_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                        IItems.Add(GridWeatherDay.FindName(String.Format("weather_type_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                        IItems.Add(GridWeatherDay.FindName(String.Format("daypart_info_today_{0}", Weather.DayPart.ValueOf(part))));
-                        IItems.Add(GridWeatherDay.FindName(String.Format("img_info_today_{0}", Weather.DayPart.ValueOf(part))));
+                        
+                        IItems.Add(GridWeatherDay.FindName(String.Format("lblTemperatureToday_{0}", part)));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("lblWindToday_{0}", part)));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("lblPressureToday_{0}", part)));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("lblHumidityToday_{0}", part)));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("lblWeatherTypeToday_{0}", part)));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("lblDaypartToday_{0}", part)));
+                        IItems.Add(GridWeatherDay.FindName(String.Format("imgWeatherToday_{0}", part)));
                         foreach (object item in IItems)
                         {
                             RefreshDaypart(item, weather[part + DayPartNow]);
@@ -132,16 +132,16 @@ namespace Yandex.Forecast
                 {
                     for (int part = 0; part < 2; part++)
                     {
-                        for (int day = 1; day <= 4; day++)
+                        for (int day = 0; day < 4; day++)
                         {
                             IItems = new List<object>();
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("date_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("img_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("temperature_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("wind_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("pressure_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("humidity_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
-                            IItems.Add(GridWeatherWeek.FindName(String.Format("weather_type_info_{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("lblDate{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("imgWeather{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("lblTemperature{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("lblWind{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("lblPressure{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("lblHumidity{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
+                            IItems.Add(GridWeatherWeek.FindName(String.Format("lblWeatherType{0}_{1}", Weather.DayPart.ValueOf(part * 2 + 1), day)));
                             foreach (object item in IItems)
                             {
                                 RefreshDaypart(item, weather[(StartFromDay + day) * 4 + (part * 2 + 1)]);
@@ -156,31 +156,31 @@ namespace Yandex.Forecast
         {
             Label label;
             Image image;
-
+            
             if (item is Label)
             {
                 label = item as Label;
-                if (label.Name.StartsWith("temperature"))
+                if (label.Name.StartsWith("lblTemperature"))
                 {
                     if (weather.Temperature > 0)
                         label.Content = String.Format("+{0}°C", weather.Temperature);
                     else
                         label.Content = String.Format("{0}°C", weather.Temperature);
                 }
-                if (label.Name.StartsWith("wind"))
+                if (label.Name.StartsWith("lblWind"))
                     label.Content = String.Format("Ветер: {0}, {1} м/с", Weather.WindDirectionRus(weather.WindDirection), weather.WindSpeed);
-                if (label.Name.StartsWith("pressure"))
+                if (label.Name.StartsWith("lblPressure"))
                     label.Content = String.Format("Давление: {0} мм.рт.ст.", weather.Pressure);
-                if (label.Name.StartsWith("humidity"))
+                if (label.Name.StartsWith("lblHumidity"))
                     label.Content = String.Format("Влажность: {0}%", weather.Humidity);
-                if (label.Name.StartsWith("weather_type"))
+                if (label.Name.StartsWith("lblWeatherType"))
                 {
                     label.Content = weather.TypeShort;
                     label.ToolTip = weather.Type;
                 }
-                if (label.Name.StartsWith("daypart") || label.Name.StartsWith("date"))
-                    label.Content = String.Format("{0}, {1:dd}.{1:MM}", Weather.DayPartRus.Convert(weather.PartOfDay), weather.Date);
-                if (label.Name.StartsWith("last_refresh"))
+                if (label.Name.StartsWith("lblDaypart") || label.Name.StartsWith("lblDate"))
+                    label.Content = String.Format("{0}, {2:dd}.{2:MM} ({1})", Weather.GetRusDayOfWeek(weather.Date.DayOfWeek), Weather.DayPartRus.Convert(weather.PartOfDay), weather.Date);
+                if (label.Name.StartsWith("lblLastRefresh"))
                     label.Content = String.Format("Последнее обновление {0:dd}.{0:MM}.{0:yyyy} в {0:HH}:{0:mm}", DateTime.Now);
             }
             if (item is Image)
@@ -191,7 +191,7 @@ namespace Yandex.Forecast
             }
         }
         //Вращение изображения отображающего статус обновления
-        private void RotateStatusImg(bool Rotate)
+        private void RotateStatusImg(bool Rotate, bool isError = false)
         {
             if (Rotate)
             {
@@ -210,7 +210,6 @@ namespace Yandex.Forecast
             }
         } 
         #endregion
-        
         #region Buttons
         //Обработчики нажатий кнопок главного окна
         private void button_load_Click(object sender, RoutedEventArgs e)
@@ -241,28 +240,28 @@ namespace Yandex.Forecast
             {
                 GridWeatherDay.Visibility = Visibility.Hidden;
                 GridWeatherWeek.Visibility = Visibility.Visible;
-                button_forecast_type.Content = "Прогноз на сегодня";
-                button_move_left.IsEnabled = false;
-                button_move_right.IsEnabled = true;
+                btnForecastType.Content = "Прогноз на сегодня";
+                btnMoveLeft.IsEnabled = false;
+                btnMoveRight.IsEnabled = true;
             }
             else
             {
                 GridWeatherWeek.Visibility = Visibility.Hidden;
                 GridWeatherDay.Visibility = Visibility.Visible;
-                button_forecast_type.Content = "Прогноз на 8 дней";
+                btnForecastType.Content = "Прогноз на 8 дней";
             }
         }
         private void button_last_days_Click(object sender, RoutedEventArgs e)
         {
             Task.Factory.StartNew(() => RefreshWeekAsync(4));
-            button_move_right.IsEnabled = false;
-            button_move_left.IsEnabled = true;
+            btnMoveRight.IsEnabled = false;
+            btnMoveLeft.IsEnabled = true;
         }
         private void button_first_days_Click(object sender, RoutedEventArgs e)
         {
             Task.Factory.StartNew(() => RefreshWeekAsync(0));
-            button_move_left.IsEnabled = false;
-            button_move_right.IsEnabled = true;
+            btnMoveLeft.IsEnabled = false;
+            btnMoveRight.IsEnabled = true;
         }
         // Обработчики нажатий пунков контекстного меню иконки в трее
         private void ShowHideTray_Click(object sender, RoutedEventArgs e)
