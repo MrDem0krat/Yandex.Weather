@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Name="MainFrame" x:Class="Yandex.Forecast.MainWindow"
-        Title="Информер погоды" Height="685" Width="920" Icon="pack://siteoforigin:,,,/Resources/icon.ico" ScrollViewer.VerticalScrollBarVisibility="Disabled" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+        Title="Информер погоды" Height="685" Width="920" Icon="pack://siteoforigin:,,,/Resources/icon.ico" ScrollViewer.VerticalScrollBarVisibility="Disabled" WindowStartupLocation="CenterScreen" WindowState="Maximized" MinWidth="930" MinHeight="620">
     <Window.Background>
         <ImageBrush ImageSource="content/graphics/back1.jpg" />
     </Window.Background>
@@ -70,22 +70,29 @@
             <Setter Property="BorderBrush" Value="{x:Null}"/>
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0,5,0"/>
         </Style>
         <Style TargetType="Button" BasedOn="{StaticResource stdStyle}"/>
-        <Style TargetType="Label" BasedOn="{StaticResource stdStyle}"/>
-        <Style x:Key="Rect" TargetType="Rectangle">
-            <Setter Property="Fill" Value="#5E237CFF"/>
-            <Setter Property="RadiusX" Value="5"/>
-            <Setter Property="RadiusY" Value="5"/>
+        <Style TargetType="Label" BasedOn="{StaticResource stdStyle}">
+            <Setter Property="MinHeight" Value="22"/>
+            <Setter Property="Margin" Value="0,5"/>
         </Style>
-        <Style x:Key="RectNight" TargetType="Rectangle" BasedOn="{StaticResource Rect}">
-            <Setter Property="Fill" Value="#B70C2C5B"/>
+        <Style x:Key="BorderStyle" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="#5E237CFF"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="10,0"/>
         </Style>
-        <Style x:Key="RectDay" TargetType="Rectangle" BasedOn="{StaticResource Rect}">
-            <Setter Property="Fill" Value="#7F237CFF"/>
+        <Style x:Key="BorderDay" TargetType="{x:Type Border}" BasedOn="{StaticResource BorderStyle}">
+            <Setter Property="Background" Value="#7F237CFF"/>
         </Style>
-        <Style TargetType="Rectangle" BasedOn="{StaticResource Rect}"/>
-
+        <Style x:Key="BorderNight" TargetType="{x:Type Border}" BasedOn="{StaticResource BorderStyle}">
+            <Setter Property="Background" Value="#B70C2C5B"/>
+        </Style>
+        <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}"/>
+        <Style x:Key="TemperatureStyle" TargetType="Label" BasedOn="{StaticResource stdStyle}">
+            <Setter Property="FontSize" Value="34"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
     </Window.Resources>
     <Grid x:Name="GridMainWnd">
         <Grid.ColumnDefinitions>
@@ -117,99 +124,111 @@
             <Label x:Name="last_refresh" Content="Погода актуальна на 12:37 21.02.2014" />
             <Image x:Name="imgStatusRefresh" Source="pack://siteoforigin:,,,/Resources/check.png" Height="30" Width="30" Stretch="UniformToFill"/>
         </StackPanel>
-        <Grid x:Name="GridWeatherDay" Grid.Row="2" Grid.ColumnSpan="14" d:IsHidden="True" >
+        <Grid x:Name="GridWeatherDay" Grid.Row="2" Grid.ColumnSpan="14"  >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="15"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="70"/>
-                <RowDefinition Height="15"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
                 <RowDefinition Height="15"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="15"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <!--today forecast-->
-            <Image x:Name="img_info_today_now" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2" Grid.RowSpan="4" />
-            <Label x:Name="city_name" Content="Название города" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="0" FontSize="32"/>
-            <Rectangle Grid.ColumnSpan="4" Fill="#A5237CFF" Grid.Column="8" Grid.Row="2" Grid.RowSpan="4" />
-            <Label x:Name="wind_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="2" FontSize="20"/>
-            <Label x:Name="pressure_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="3" FontSize="20"/>
-            <Label x:Name="humidity_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="4" FontSize="20"/>
-            <Label x:Name="weather_type_info_today_now" Grid.ColumnSpan="4" Content="Label" Grid.Column="8" Grid.Row="5" FontSize="20"/>
-            <Label x:Name="temperature_info_today_now" Grid.ColumnSpan="4" Content="+21°С" Grid.Column="4" Grid.Row="2" Grid.RowSpan="4" FontSize="145" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <DockPanel LastChildFill="True" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="7">
+                <Border DockPanel.Dock="Right">
+                    <StackPanel DockPanel.Dock="Right" Margin="30,0" VerticalAlignment="Center">
+                        <Label x:Name="wind_info_today_now" Content="Label" FontSize="24"/>
+                        <Label x:Name="pressure_info_today_now" Content="Label" FontSize="24"/>
+                        <Label x:Name="humidity_info_today_now" Content="Label" FontSize="24"/>
+                        <Label x:Name="weather_type_info_today_now" Content="Label" FontSize="24"/>
+                    </StackPanel>
+                </Border>
+                <DockPanel LastChildFill="True">
+                    <DockPanel DockPanel.Dock="Left">
+                        <Label x:Name="city_name" Content="Название города" DockPanel.Dock="Top" FontSize="32"/>
+                        <Label x:Name="temperature_info_today_now" DockPanel.Dock="Bottom" Content="+21°С" FontSize="145"/>
+                    </DockPanel>
+                    <Image x:Name="img_info_today_now"/>
+                </DockPanel>
+            </DockPanel>
             <!--Morning-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_morning" Content="Утро" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="2"/>
-            <Label x:Name="temperature_info_today_morning" Grid.ColumnSpan="1" Content="Label" Grid.Column="2" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
-            <Image x:Name="img_info_today_morning" Grid.Column="1"  Grid.Row="8"  Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1" Grid.Row="9"/>
-            <Label x:Name="pressure_info_today_morning" Content="Label" Grid.Column="1" Grid.Row="10" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1" Grid.Row="11"/>
-            <Label x:Name="weather_type_info_today_morning" Grid.ColumnSpan="2" Content="Label" Grid.Column="1" Grid.Row="12"/>
+            <Border Grid.Row="3" Grid.Column="1">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="daypart_info_today_morning" HorizontalContentAlignment="Center" DockPanel.Dock="Top"/>
+                    <Label x:Name="weather_type_info_today_morning" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_today_morning" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_today_morning" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_today_morning" DockPanel.Dock="Bottom"/>
+                    <DockPanel LastChildFill="True">
+                        <Label x:Name="temperature_info_today_morning" Style="{StaticResource TemperatureStyle}" DockPanel.Dock="Right"/>
+                        <Image x:Name="img_info_today_morning"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!--Day-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="4" Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_day" Content="День" HorizontalContentAlignment="Center" Grid.Column="4" Grid.Row="7" Grid.ColumnSpan="2"/>
-            <Label x:Name="temperature_info_today_day" Grid.ColumnSpan="1" Content="Label" Grid.Column="5" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
-            <Image x:Name="img_info_today_day" Grid.Column="4" Grid.Row="8" Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4" Grid.Row="9"/>
-            <Label x:Name="pressure_info_today_day" Content="Label" Grid.Column="4" Grid.Row="10" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4" Grid.Row="11"/>
-            <Label x:Name="weather_type_info_today_day" Grid.ColumnSpan="2" Content="Label" Grid.Column="4" Grid.Row="12"/>
+            <Border Grid.Row="3" Grid.Column="3">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="daypart_info_today_day" HorizontalContentAlignment="Center" DockPanel.Dock="Top"/>
+                    <Label x:Name="weather_type_info_today_day" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_today_day" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_today_day" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_today_day" DockPanel.Dock="Bottom"/>
+                    <DockPanel LastChildFill="True">
+                        <Label x:Name="temperature_info_today_day" Style="{StaticResource TemperatureStyle}" DockPanel.Dock="Right"/>
+                        <Image x:Name="img_info_today_day"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!--Evening-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="7" Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_evening" Content="Вечер" HorizontalContentAlignment="Center" Grid.Column="7" Grid.Row="7" Grid.ColumnSpan="2"/>
-            <Label x:Name="temperature_info_today_evening" Grid.ColumnSpan="1" Content="Label" Grid.Column="8" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
-            <Image x:Name="img_info_today_evening" Grid.Column="7" Grid.Row="8" Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7" Grid.Row="9"/>
-            <Label x:Name="pressure_info_today_evening" Content="Label" Grid.Column="7" Grid.Row="10" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7" Grid.Row="11"/>
-            <Label x:Name="weather_type_info_today_evening" Grid.ColumnSpan="2" Content="Label" Grid.Column="7" Grid.Row="12"/>
+            <Border Grid.Row="3" Grid.Column="5">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="daypart_info_today_evening" HorizontalContentAlignment="Center" DockPanel.Dock="Top"/>
+                    <Label x:Name="weather_type_info_today_evening" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_today_evening" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_today_evening" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_today_evening" DockPanel.Dock="Bottom"/>
+                    <DockPanel LastChildFill="True">
+                        <Label x:Name="temperature_info_today_evening" Style="{StaticResource TemperatureStyle}" DockPanel.Dock="Right"/>
+                        <Image x:Name="img_info_today_evening"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!--Nigth-->
-            <Rectangle Grid.ColumnSpan="2" Grid.Column="10" Grid.Row="7" Grid.RowSpan="6" />
-            <Label x:Name="daypart_info_today_night" Content="Ночь" HorizontalContentAlignment="Center" Grid.Column="10" Grid.Row="7" Grid.ColumnSpan="2"/>
-            <Label x:Name="temperature_info_today_night" Grid.ColumnSpan="1" Content="Label" Grid.Column="11" Grid.Row="8" HorizontalContentAlignment="Center" FontSize="38"/>
-            <Image x:Name="img_info_today_night" Grid.Column="10" Grid.Row="8" Grid.ColumnSpan="1"/>
-            <Label x:Name="wind_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10" Grid.Row="9"/>
-            <Label x:Name="pressure_info_today_night" Content="Label" Grid.Column="10"  Grid.Row="10"  Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10" Grid.Row="11"/>
-            <Label x:Name="weather_type_info_today_night" Grid.ColumnSpan="2" Content="Label" Grid.Column="10" Grid.Row="12"/>
+            <Border Grid.Row="3" Grid.Column="7">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="daypart_info_today_night" HorizontalContentAlignment="Center" DockPanel.Dock="Top"/>
+                    <Label x:Name="weather_type_info_today_night" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_today_night" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_today_night" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_today_night" DockPanel.Dock="Bottom"/>
+                    <DockPanel LastChildFill="True">
+                        <Label x:Name="temperature_info_today_night" Style="{StaticResource TemperatureStyle}" DockPanel.Dock="Right"/>
+                        <Image x:Name="img_info_today_night"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
         </Grid>
-        <Grid x:Name="GridWeatherWeek" Grid.Row="2" Grid.ColumnSpan="14" >
+        <Grid x:Name="GridWeatherWeek" Grid.Row="2" Grid.ColumnSpan="14" d:IsHidden="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="40"/>
@@ -218,99 +237,129 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="15"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="15"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="15"/>
             </Grid.RowDefinitions>
             <!--Control buttons-->
-            <Button x:Name="button_move_left" Style="{StaticResource ArrowButton}" IsEnabled="False" Grid.Column="1" Grid.Row="6" Grid.RowSpan="3" Click="button_first_days_Click">
+            <Button x:Name="button_move_left" Style="{StaticResource ArrowButton}" IsEnabled="False" Height="90" Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Click="button_first_days_Click">
                 <Path Data="M7.701,14.276l9.586-9.585c0.879-0.878,2.317-0.878,3.195,0l0.801,0.8c0.878,0.877,0.878,2.316,0,3.194  L13.968,16l7.315,7.315c0.878,0.878,0.878,2.317,0,3.194l-0.801,0.8c-0.878,0.879-2.316,0.879-3.195,0l-9.586-9.587  C7.229,17.252,7.02,16.62,7.054,16C7.02,15.38,7.229,14.748,7.701,14.276z"/>
             </Button>
-            <Button x:Name="button_move_right" Style="{StaticResource ArrowButton}" IsEnabled="True" Grid.Column="15" Grid.Row="6" Grid.RowSpan="3" Click="button_last_days_Click">
+            <Button x:Name="button_move_right" Style="{StaticResource ArrowButton}" IsEnabled="True" Height="90" Grid.Column="11" Grid.Row="1" Grid.RowSpan="3" Click="button_last_days_Click">
                 <Path Data="M24.291,14.276L14.705,4.69c-0.878-0.878-2.317-0.878-3.195,0l-0.8,0.8c-0.878,0.877-0.878,2.316,0,3.194  L18.024,16l-7.315,7.315c-0.878,0.878-0.878,2.317,0,3.194l0.8,0.8c0.878,0.879,2.317,0.879,3.195,0l9.586-9.587  c0.472-0.471,0.682-1.103,0.647-1.723C24.973,15.38,24.763,14.748,24.291,14.276z"/>
             </Button>
             <!-- Day 1 -->
-            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_day_1" Content="Date_1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_1" Grid.Row="2" Grid.Column="3"/>
-            <Label x:Name="temperature_info_day_1" Content="+25°C" Grid.Row="2" Grid.Column="4" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_1" Content="Wind_1" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_day_1" Content="Pressure_1" Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_day_1" Content="Humidity_1" Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_day_1" Content="Weather_Type_1" Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderDay}" Grid.Row="1" Grid.Column="3">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_day_1" HorizontalContentAlignment="Center" DockPanel.Dock="Top"/>
+                    <Label x:Name="weather_type_info_day_1" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_day_1" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_day_1" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_day_1" DockPanel.Dock="Bottom"/>
+                    <DockPanel LastChildFill="True">
+                        <Label x:Name="temperature_info_day_1" Style="{StaticResource TemperatureStyle}" DockPanel.Dock="Right"/>
+                        <Image x:Name="img_info_day_1"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Day 2 -->
-            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_day_2" Content="Date_1" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_2" Grid.Row="2" Grid.Column="6"/>
-            <Label x:Name="temperature_info_day_2" Content="+25°C" Grid.Row="2" Grid.Column="7" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_2" Content="Wind_1" Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_day_2" Content="Pressure_1" Grid.Row="4" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_day_2" Content="Humidity_1" Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_day_2" Content="Weather_Type_1" Grid.Row="6" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderDay}" Grid.Row="1" Grid.Column="5">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_day_2" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="weather_type_info_day_2" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_day_2" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_day_2" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_day_2" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_day_2" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_day_2"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Day 3 -->
-            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_day_3" Content="Date_1" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_3" Grid.Row="2" Grid.Column="9"/>
-            <Label x:Name="temperature_info_day_3" Content="+25°C" Grid.Row="2" Grid.Column="10" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_3" Content="Wind_1" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_day_3" Content="Pressure_1" Grid.Row="4" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_day_3" Content="Humidity_1" Grid.Row="5" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_day_3" Content="Weather_Type_1" Grid.Row="6" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderDay}" Grid.Row="1" Grid.Column="7">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_day_3" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="weather_type_info_day_3" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_day_3" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_day_3" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_day_3" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_day_3" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_day_3"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Day 4 -->
-            <Rectangle Style="{StaticResource RectDay}" Grid.Row="1" Grid.RowSpan="6" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_day_4" Content="Date_1" Grid.Row="1" Grid.Column="12" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_day_4" Grid.Row="2" Grid.Column="12"/>
-            <Label x:Name="temperature_info_day_4" Content="+25°C" Grid.Row="2" Grid.Column="13" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_day_4" Content="Wind_1" Grid.Row="3" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_day_4" Content="Pressure_1" Grid.Row="4" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_day_4" Content="Humidity_1" Grid.Row="5" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_day_4" Content="Weather_Type_1" Grid.Row="6" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderDay}" Grid.Row="1" Grid.Column="9">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_day_4" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="weather_type_info_day_4" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_day_4" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_day_4" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_day_4" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_day_4" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_day_4"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Night 1 -->
-            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_night_1" Content="Date_1" Grid.Row="8" Grid.Column="3" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_1" Grid.Row="9" Grid.Column="3"/>
-            <Label x:Name="temperature_info_night_1" Content="+25°C" Grid.Row="9" Grid.Column="4" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_1" Content="Wind_1" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_night_1" Content="Pressure_1" Grid.Row="11" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_night_1" Content="Humidity_1" Grid.Row="12" Grid.Column="3" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_night_1" Content="Weather_Type_1" Grid.Row="13" Grid.Column="3" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderNight}" Grid.Row="3" Grid.Column="3">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_night_1" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="weather_type_info_night_1" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_night_1" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_night_1" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_night_1" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_night_1" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_night_1"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Night 2 -->
-            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_night_2" Content="Date_1" Grid.Row="8" Grid.Column="6" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_2" Grid.Row="9" Grid.Column="6"/>
-            <Label x:Name="temperature_info_night_2" Content="+25°C" Grid.Row="9" Grid.Column="7" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_2" Content="Wind_1" Grid.Row="10" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_night_2" Content="Pressure_1" Grid.Row="11" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_night_2" Content="Humidity_1" Grid.Row="12" Grid.Column="6" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_night_2" Content="Weather_Type_1" Grid.Row="13" Grid.Column="6" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderNight}" Grid.Row="3" Grid.Column="5">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_night_2" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="weather_type_info_night_2" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_night_2" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_night_2" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_night_2" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_night_2" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_night_2"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Night 3 -->
-            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_night_3" Content="Date_1" Grid.Row="8" Grid.Column="9" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_3" Grid.Row="9" Grid.Column="9"/>
-            <Label x:Name="temperature_info_night_3" Content="+25°C" Grid.Row="9" Grid.Column="10" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_3" Content="Wind_1" Grid.Row="10" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_night_3" Content="Pressure_1" Grid.Row="11" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_night_3" Content="Humidity_1" Grid.Row="12" Grid.Column="9" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_night_3" Content="Weather_Type_1" Grid.Row="13" Grid.Column="9" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderNight}" Grid.Row="3" Grid.Column="7">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_night_3" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="weather_type_info_night_3" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_night_3" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_night_3" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="wind_info_night_3" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_night_3" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_night_3"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
             <!-- Night 4 -->
-            <Rectangle Style="{StaticResource RectNight}" Grid.Row="8" Grid.RowSpan="6" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="date_info_night_4" Content="Date_1" Grid.Row="8" Grid.Column="12" Grid.ColumnSpan="2" HorizontalContentAlignment="Center"/>
-            <Image x:Name="img_info_night_4" Grid.Row="9" Grid.Column="12"/>
-            <Label x:Name="temperature_info_night_4" Content="+25°C" Grid.Row="9" Grid.Column="13" FontSize="34" HorizontalContentAlignment="Center"/>
-            <Label x:Name="wind_info_night_4" Content="Wind_1" Grid.Row="10" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="pressure_info_night_4" Content="Pressure_1" Grid.Row="11" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="humidity_info_night_4" Content="Humidity_1" Grid.Row="12" Grid.Column="12" Grid.ColumnSpan="2"/>
-            <Label x:Name="weather_type_info_night_4" Content="Weather_Type_1" Grid.Row="13" Grid.Column="12" Grid.ColumnSpan="2"/>
+            <Border Style="{StaticResource BorderNight}" Grid.Row="3" Grid.Column="9">
+                <DockPanel LastChildFill="True">
+                    <Label x:Name="date_info_night_4" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="wind_info_night_4" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="pressure_info_night_4" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="humidity_info_night_4" DockPanel.Dock="Bottom"/>
+                    <Label x:Name="weather_type_info_night_4" DockPanel.Dock="Bottom"/>
+                    <DockPanel>
+                        <Label x:Name="temperature_info_night_4" DockPanel.Dock="Right" Style="{StaticResource TemperatureStyle}"/>
+                        <Image x:Name="img_info_night_4"/>
+                    </DockPanel>
+                </DockPanel>
+            </Border>
         </Grid>
     </Grid>
 </Window>
