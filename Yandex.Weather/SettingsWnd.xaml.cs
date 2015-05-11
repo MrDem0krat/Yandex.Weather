@@ -42,13 +42,13 @@ namespace Yandex.Forecast
         {
             base.OnInitialized(e);
             ShowCityList();
-            cityNameBox.Text = WeatherLib.Weather.CityName;
-            RefreshPeriodBox.SelectedIndex = Settings.RefreshPeriod.FindID(Properties.Settings.Default.RefreshPeriod);
-            MinimazeTrayBox.IsChecked = !Properties.Settings.Default.CanClose;
-            LoginBox.Text = WeatherLib.WeatherDatabase.User;
-            PasswordBox.Password = "    ";
-            ServerBox.Text = WeatherLib.WeatherDatabase.Server;
-            PortBox.Text = WeatherLib.WeatherDatabase.Port.ToString();
+            CityName.Text = WeatherLib.Weather.CityName;
+            RefreshPeriod.SelectedIndex = Settings.RefreshPeriod.FindID(Properties.Settings.Default.RefreshPeriod);
+            isMinimazeToTray.IsChecked = !Properties.Settings.Default.CanClose;
+            Login.Text = WeatherLib.WeatherDatabase.User;
+            Password.Password = "    ";
+            Server.Text = WeatherLib.WeatherDatabase.Server;
+            Port.Text = WeatherLib.WeatherDatabase.Port.ToString();
         }
         
         // Функция поиска города
@@ -90,9 +90,9 @@ namespace Yandex.Forecast
         private void ShowCityList()
         {
             List<City> list = FindCityList();
-            cityNameBox.Items.Clear();
-            cityNameBox.SelectedValuePath = "ID";
-            cityNameBox.ItemsSource = list;
+            CityName.Items.Clear();
+            CityName.SelectedValuePath = "ID";
+            CityName.ItemsSource = list;
         }
 
     }

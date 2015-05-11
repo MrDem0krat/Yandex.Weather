@@ -222,16 +222,16 @@ namespace Yandex.Forecast
             settingsWnd = new SettingsWindow();
             if(settingsWnd.ShowDialog() == true) // При нажатии ОК сохранаяем все настройки
             {
-                Weather.CityName = settingsWnd.cityNameBox.SelectedItem.ToString();
-                Weather.CityID = settingsWnd.cityNameBox.SelectedValue.ToString();
+                Weather.CityName = settingsWnd.CityName.SelectedItem.ToString();
+                Weather.CityID = settingsWnd.CityName.SelectedValue.ToString();
                 Weather.CityNameEng = Weather.ReadCityNameEng();
-                Properties.Settings.Default.RefreshPeriod = Settings.RefreshPeriod.FindName(settingsWnd.RefreshPeriodBox.SelectedIndex);
-                Properties.Settings.Default.CanClose = !settingsWnd.MinimazeTrayBox.IsChecked.Value;
-                WeatherDatabase.User = settingsWnd.LoginBox.Text;
-                WeatherDatabase.Server = settingsWnd.ServerBox.Text;
-                WeatherDatabase.Port = uint.Parse(settingsWnd.PortBox.Text);
-                if (settingsWnd.PasswordBox.Password != "    ")
-                    WeatherDatabase.Password = settingsWnd.PasswordBox.Password;
+                Properties.Settings.Default.RefreshPeriod = Settings.RefreshPeriod.FindName(settingsWnd.RefreshPeriod.SelectedIndex);
+                Properties.Settings.Default.CanClose = !settingsWnd.isMinimazeToTray.IsChecked.Value;
+                WeatherDatabase.User = settingsWnd.Login.Text;
+                WeatherDatabase.Server = settingsWnd.Server.Text;
+                WeatherDatabase.Port = uint.Parse(settingsWnd.Port.Text);
+                if (settingsWnd.Password.Password != "    ")
+                    WeatherDatabase.Password = settingsWnd.Password.Password;
                 Properties.Settings.Default.Save();
             }
         }
