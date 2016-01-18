@@ -20,6 +20,7 @@ namespace Yandex.Forecast
         {
             Application.Current.MainWindow.Hide();
             InitializeComponent();
+            splash.Close(TimeSpan.FromSeconds(0.5));
             Yandex.Forecast.MainWindow.TrayIcon = Settings.TrayIconConfig();
             Yandex.Forecast.MainWindow.TrayMenu = Resources["TrayMenu"] as ContextMenu;
             GridWeatherWeek.Visibility = Visibility.Hidden;
@@ -27,7 +28,7 @@ namespace Yandex.Forecast
             Task.Factory.StartNew(async () =>
                 { 
                     await RefreshAsync();
-                    splash.Close(TimeSpan.FromSeconds(0.5));
+                    //splash.Close(TimeSpan.FromSeconds(0.5));
                     Dispatcher.Invoke(() => Application.Current.MainWindow.Show());
                 });
         }

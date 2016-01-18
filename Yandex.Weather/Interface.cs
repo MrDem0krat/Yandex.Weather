@@ -175,11 +175,11 @@ namespace Yandex.Forecast
                     label.Content = String.Format("Влажность: {0}%", weather.Humidity);
                 if (label.Name.StartsWith("lblWeatherType"))
                 {
-                    label.Content = weather.TypeShort;
+                    label.Content = weather.Type;
                     label.ToolTip = weather.Type;
                 }
                 if (label.Name.StartsWith("lblDaypart") || label.Name.StartsWith("lblDate"))
-                    label.Content = String.Format("{0}, {2:dd}.{2:MM} ({1})", Weather.GetRusDayOfWeek(weather.Date.DayOfWeek), Weather.DayPartRus.Convert(weather.PartOfDay), weather.Date);
+                    label.Content = String.Format("{0}, {2:dd}.{2:MM} ({1})", Weather.GetRusDayOfWeek(weather.Date), Weather.DayPartRus.Convert(weather.PartOfDay), weather.Date);
                 if (label.Name.StartsWith("lblLastRefresh"))
                     label.Content = String.Format("Последнее обновление {0:dd}.{0:MM}.{0:yyyy} в {0:HH}:{0:mm}", DateTime.Now);
             }
